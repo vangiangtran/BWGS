@@ -34,22 +34,22 @@
 #' @examples
 #' bwgs.cv(geno,pheno,random.pop.size="NULL",geno.reduct.method="NULL",reduct.size=NULL,pval=NULL,
 #           r2=NULL,MAP=NULL,geno.impute.method="MNI",predict.method="RR",nFolds=10,nTimes=10)
-
+#' @export
 bwgs.cv <- function(geno,pheno,FIXED="NULL", MAXNA=0.2,MAF=0.05,pop.reduct.method="NULL",sample.pop.size="NULL",geno.reduct.method="NULL",reduct.marker.size="NULL",
-	pval="NULL",r2="NULL",MAP="NULL", geno.impute.method="NULL",predict.method="NULL",nFolds,nTimes)
+                    pval="NULL",r2="NULL",MAP="NULL", geno.impute.method="NULL",predict.method="NULL",nFolds,nTimes)
 {
   #(c)2015 louis.gautier.tran@gmail.com & gilles.charmet@clermont.inra.fr
   message("2017 BWGS  - Version 1.10.0 Release date: 31/10/2017")
   #message("2015 Gilles Charmet & Louis Gautier Tran)
- 
-# CALL to REQUIRED LIBRARIES 
+  
+  # CALL to REQUIRED LIBRARIES 
   library(rrBLUP)
   library(BGLR)
   library(brnn)
   library(glmnet)
   library(e1071) 
   library(randomForest)
-
+  
   #message("")
   start.time <- Sys.time()
   message("Start time:")
@@ -57,8 +57,8 @@ bwgs.cv <- function(geno,pheno,FIXED="NULL", MAXNA=0.2,MAF=0.05,pop.reduct.metho
   message("")
   pop.reduct.method <- toupper(pop.reduct.method)
   geno.reduct.method <- toupper(geno.reduct.method)
- 
-
+  
+  
   reduct.size <- as.numeric(reduct.marker.size)
   geno.impute.method <- toupper(geno.impute.method)
   predict.method <- toupper(predict.method)
@@ -66,162 +66,154 @@ bwgs.cv <- function(geno,pheno,FIXED="NULL", MAXNA=0.2,MAF=0.05,pop.reduct.metho
   #r2 and n.parts are for GMSLD or GMSLDV reduct method
   
   #if geno.impute.method ="ALL" and predict.method="ALL": bwgs.cv() will compare all methods
-
+  
   #///////////////////////////////////////////////////////////////
   #STEP 0: select common lines in geno and pheno matrices
   # FILTER according to MAF and MAXNA
   #//////////////////////////////////////////////////////////////
-    
-	if(MAP!="NULL")
-	{
-  	MAPPED_markers=intersect(rownames(MAP),colnames(geno))
-  	
-  	MAP=MAP[MAPPED_markers,]
-  	geno=geno[,MAPPED_markers]
-	}
-	
-	if(FIXED!="NULL")
-	{
-	genoFIX=intersect(rownames(FIXED),rownames(geno))
-	
-	FIXED=FIXED[genoFIX,]
-	geno=geno[genoFIX,]
-	}
-	
-	
-	
-	listGENO=rownames(geno)
-	listPHENO=names(pheno)
-	LIST=intersect(listGENO,listPHENO)
-
-	if (length(LIST)==0)
-	{stop("NO COMMON LINE BETWENN geno AND pheno")}
-	if(length(LIST)>0)
-	{
-	geno=geno[LIST,]
-	pheno=pheno[LIST]
-	if(FIXED!="NULL"){FIXED=FIXED[LIST,]}
-	
-	new.pheno.size=length(LIST)
- 	message("Number of common lines between geno and pheno")
-      print(new.pheno.size)
-	}	
-	# FILTERING GENOTYPING MATRIX
-	# for % NA per marker
-
-	markerNA=apply(geno,2,percentNA)
-	geno=geno[,markerNA<MAXNA]
-
-	freqSNP=apply(geno,2,myMean)
-
-	geno=geno[,freqSNP>MAF & freqSNP<(1-MAF)]
-
-	new.geno.size=dim(geno)
-	message("Number of markers after filtering")
-      print(new.geno.size)
   
-	
-
- 
-	if (pop.reduct.method=="NULL"|(toupper(as.character(pop.reduct.method))=="NULL"))
-  {   
-  rps <-0  
-	message("random pop size not applied")
-      print(rps)
-	message("")
-   
-  } 
-
-
-
-	if (pop.reduct.method=="RANDOM"|(toupper(as.character(pop.reduct.method))=="RANDOM"))
+  if(MAP!="NULL")  {
+    MAPPED_markers=intersect(rownames(MAP),colnames(geno))
+    if (length(MAPPED_markers) == 0) {
+      stop("The row names of MAP is not matched with columns of geno")
+    }
+    MAP=MAP[MAPPED_markers,]
+    geno=geno[,MAPPED_markers]
+  }
+  
+  if(FIXED!="NULL") {
+    genoFIX=intersect(rownames(FIXED),rownames(geno))
+    
+    FIXED=FIXED[genoFIX,]
+    geno=geno[genoFIX,]
+  }
+  
+  
+  
+  listGENO=rownames(geno)
+  listPHENO=names(pheno)
+  LIST=intersect(listGENO,listPHENO)
+  
+  if (length(LIST)==0)
+  {stop("NO COMMON LINE BETWENN geno AND pheno")}
+  if(length(LIST)>0)
   {
+    geno=geno[LIST,]
+    pheno=pheno[LIST]
+    if(FIXED!="NULL"){FIXED=FIXED[LIST,]}
+    
+    new.pheno.size=length(LIST)
+    message("Number of common lines between geno and pheno")
+    print(new.pheno.size)
+  }	
+  # FILTERING GENOTYPING MATRIX
+  # for % NA per marker
+  
+  markerNA=apply(geno,2,percentNA)
+  geno=geno[,markerNA<MAXNA]
+  
+  
+  freqSNP=apply(geno,2,myMean)
+  
+  geno=geno[,freqSNP>MAF & freqSNP<(1-MAF)]
+  
+  new.geno.size=dim(geno)
+  message("Number of markers after filtering")
+  print(new.geno.size)
+  
+  if (pop.reduct.method=="NULL"|(toupper(as.character(pop.reduct.method))=="NULL")) {   
+    rps <-0  
+    message("random pop size not applied")
+    print(rps)
+    message("")
+    
+  } 
+  
+  
+  
+  if (pop.reduct.method=="RANDOM"|(toupper(as.character(pop.reduct.method))=="RANDOM")) {
     rps <- sample.pop.size
- 
-	message("random pop size=")
-      print(rps)
-	message("")
-   }
-	
-if (pop.reduct.method=="OPTI"|(toupper(as.character(pop.reduct.method))=="OPTI"))
+    
+    message("random pop size=")
+    print(rps)
+    message("")
+  }
+  
+  if (pop.reduct.method=="OPTI"|(toupper(as.character(pop.reduct.method))=="OPTI"))
   {
     #shrink_size <- as.numeric(reduct.size)
     rps <- as.numeric(sample.pop.size)
-  
-
-	message("optimized pop size=")
-  print(rps)
-	message("")	
+    
+    
+    message("optimized pop size=")
+    print(rps)
+    message("")	
   }
-
- 
- message("POPULATION SAMPLING METHOD")
-print(pop.reduct.method)
-message("")
-
-
-	
+  
+  
+  message("POPULATION SAMPLING METHOD")
+  print(pop.reduct.method)
+  message("")
+  
+  
+  
   
   
   #//////////////////////////////////////////////////////////////
   #Step 1: Imputation "MNI" or "EMI"
   #//////////////////////////////////////////////////////////////
   
-  if((geno.impute.method=="NULL")|(geno.impute.method=="MNI")|(geno.impute.method=="EMI"))
-  {
+  if((geno.impute.method=="NULL")|(geno.impute.method=="MNI")|(geno.impute.method=="EMI")) {
     
     if(geno.impute.method=="MNI"){ 
       
       
-        time.mni = system.time(geno_impute <- MNI(geno))
-        time.mni.impute = as.numeric(round(time.mni[3]/60,digits=2))
-        message("Imputed by MNI.")
-        message("Time of imputation by MNI (mins):")
-        print(time.mni.impute)
+      time.mni = system.time(geno_impute <- MNI(geno))
+      time.mni.impute = as.numeric(round(time.mni[3]/60,digits=2))
+      message("Imputed by MNI.")
+      message("Time of imputation by MNI (mins):")
+      print(time.mni.impute)
       
       message("A part 5x20 of Imputed genotypic matrix:")
       print(geno_impute[1:5,1:20],quote=FALSE)
       message("")
     } 
-	
+    
     
     if(geno.impute.method=="EMI")
-	{ 
+    { 
       
-        # emi.time.start = system.time()
-        # geno_impute <- EMI(geno_shrink)
-        # emi.time.stop = system.time()
-        time.emi = system.time(geno_impute <- EMI(geno))
-
-
-        time.emi.impute = as.numeric(round(time.emi[3]/60,digits=2))
-        message("Imputed by EMI.")
-        message("Time of imputation by EMI (mins):")
-        print(time.emi.impute)
-	  
+      # emi.time.start = system.time()
+      # geno_impute <- EMI(geno_shrink)
+      # emi.time.stop = system.time()
+      time.emi = system.time(geno_impute <- EMI(geno))
+      
+      
+      time.emi.impute = as.numeric(round(time.emi[3]/60,digits=2))
+      message("Imputed by EMI.")
+      message("Time of imputation by EMI (mins):")
+      print(time.emi.impute)
+      
       message("A part 5x20 of Imputed genotypic matrix:")
       print(geno_impute[1:5,1:20],quote=FALSE)
       message("")
-	  
+      
     }
-   
-        message("Imputed by MNI, EMI...finished.")
-      if (FIXED!="NULL") {FIXED=round(MNI(FIXED))}
-	
-     
-    } 
     
-  else {stop("Please choose an impute method: NULL, MNI, EMI ")
+    message("Imputed by MNI, EMI...finished.")
+    if (FIXED!="NULL") {FIXED=round(MNI(FIXED))}
+    
+    
+  } else {
+    stop("Please choose an impute method: NULL, MNI, EMI ")
   } #If not chosen an impute method
-
+  
   
   #///////////////////////////////////////////////////////////////
   #STEP 2: reduction OF THE DATA (reduire les donnees)
   #//////////////////////////////////////////////////////////////
   
-  if((geno.reduct.method=="NULL")|(geno.reduct.method=="RMR")|(geno.reduct.method=="ANO")|(geno.reduct.method=="LD")|(geno.reduct.method=="ANO+LD")) 
-  
-  { 
+  if((geno.reduct.method=="NULL")|(geno.reduct.method=="RMR")|(geno.reduct.method=="ANO")|(geno.reduct.method=="LD")|(geno.reduct.method=="ANO+LD")) { 
     
     if(geno.reduct.method=="NULL"){ 
       geno_shrink <- geno_impute 
@@ -250,14 +242,14 @@ message("")
       }  else {stop("Please choose the size of columns for new genotypic data.")}
       
     }
-
-
+    
+    
     if(geno.reduct.method=="ANO"){   
       
       #if(is.null(reduct.size)) {stop("Please choose the size of columns for new genotypic data.")}
       
       if(!is.null(pval)){
-      
+        
         time.ano = system.time(geno_shrink <- ANO(pheno,geno_impute,pval))
         time.ano.reduct = as.numeric(round(time.ano[3]/60,digits=2))
         new.geno.size <- dim(geno_shrink)
@@ -271,81 +263,81 @@ message("")
       }  else {stop("Please choose the p value for new genotypic data.")}
       
     }
-
+    
     if(geno.reduct.method=="ANO+LD")
-	{    
+    {    
       if(!is.null(pval))
-	  {
-      
+      {
+        
         time.ano = system.time(geno_shrinkANO <- ANO(pheno,geno_impute,pval))
         time.ano.reduct = as.numeric(round(time.ano[3]/60,digits=2))
-		geno_shrinkANO=geno_shrinkANO[,!is.na(colnames(geno_shrinkANO))]
-		
-		}  else {stop("Please choose the p value for new genotypic data.")}
-		
-	if(MAP=="NULL")
-	{
-       stop("Please choose the r2 and/or MAP for LD reduction.")
-    } # END OF LD reduction
-
-	
-	
-	if(MAP!="NULL")
-	{
-		 if (!is.null(r2))
-	{
-        MAP2=MAP[colnames(geno_shrinkANO),]
-		time.chrld = system.time(geno_shrink <- CHROMLD(geno_shrinkANO,R2seuil=r2,MAP=MAP2))
-        time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
-        new.geno.size <- dim(geno_shrink)
-        #geno_shrink
-		time.anold.reduct=time.ano.reduct+time.chrld.reduct
-        new.geno.size <- dim(geno_shrink)
-        #geno_shrink
-        message("Reduced by ANO + CHROMLD. New genotypic data dimension:")
-        print(new.geno.size)
-        message("")
-        message("Time of reduction by ANO+ LD (mins):")
-        print(time.anold.reduct)
-		
-	  
-      }
+        geno_shrinkANO=geno_shrinkANO[,!is.na(colnames(geno_shrinkANO))]
         
-     else {stop("Please choose the r2 and/or MAP for LD reduction.")}
-    } # END OF LD reduction
-			      
-    }
-
-    if(geno.reduct.method=="LD")
-	
-	{
-      if(MAP=="NULL")
-	  {
-	   
-         {stop("Please choose a MAP for LD reduction.")}
-      } # END OF LD reduction
-	
-        
-		MAP2=MAP[colnames(geno),]
-		
-		time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil=r2,MAP=MAP2))
-        time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
-        new.geno.size <- dim(geno_shrink)
-        #geno_shrink
-        message("Reduced by CHROMLD. New genotypic data dimension:")
-        print(new.geno.size)
-        message("")
-        message("Time of reduction by CHROMLD (mins):")
-        print(time.chrld.reduct)
+      }  else {stop("Please choose the p value for new genotypic data.")}
       
-	  
+      if(MAP=="NULL")
+      {
+        stop("Please choose the r2 and/or MAP for LD reduction.")
+      } # END OF LD reduction
+      
+      
+      
+      if(MAP!="NULL")
+      {
+        if (!is.null(r2))
+        {
+          MAP2=MAP[colnames(geno_shrinkANO),]
+          time.chrld = system.time(geno_shrink <- CHROMLD(geno_shrinkANO,R2seuil=r2,MAP=MAP2))
+          time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
+          new.geno.size <- dim(geno_shrink)
+          #geno_shrink
+          time.anold.reduct=time.ano.reduct+time.chrld.reduct
+          new.geno.size <- dim(geno_shrink)
+          #geno_shrink
+          message("Reduced by ANO + CHROMLD. New genotypic data dimension:")
+          print(new.geno.size)
+          message("")
+          message("Time of reduction by ANO+ LD (mins):")
+          print(time.anold.reduct)
+          
+          
+        }
         
-
+        else {stop("Please choose the r2 and/or MAP for LD reduction.")}
+      } # END OF LD reduction
+      
+    }
+    
+    if(geno.reduct.method=="LD")
+      
+    {
+      if(MAP=="NULL")
+      {
+        
+        {stop("Please choose a MAP for LD reduction.")}
+      } # END OF LD reduction
+      
+      
+      MAP2=MAP[colnames(geno),]
+      
+      time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil=r2,MAP=MAP2))
+      time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
+      new.geno.size <- dim(geno_shrink)
+      #geno_shrink
+      message("Reduced by CHROMLD. New genotypic data dimension:")
+      print(new.geno.size)
+      message("")
+      message("Time of reduction by CHROMLD (mins):")
+      print(time.chrld.reduct)
+      
+      
+      
+      
     } # END OF LD reduction
     
-   
     
-   
+    
+    
   } # End if not chosen a reduct method
   
   else {stop("BWGS Warning! Please choose a valid reduct method. Ex.: RMR, AM, LD, NULL.")} #If not choose a reduct method
@@ -358,26 +350,26 @@ message("")
   #/////////////////////////////////////////////////////
   #STEP 3: CROSS VALIDATION - BEST MODEL IDENTIFICATION
   #/////////////////////////////////////////////////////
-if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(predict.method=="RR")|(predict.method=="BA")|
-(predict.method=="BB")|(predict.method=="LASSO")|(predict.method=="BL")|(predict.method=="BC")|(predict.method=="GBLUP")|(predict.method=="BRNN")|
-(predict.method=="MKRKHS")|(predict.method=="RF")|(predict.method=="BRR")|(predict.method=="RKHS")|(predict.method=="ALL"))
-{
-
-  
+  if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(predict.method=="RR")|(predict.method=="BA")|
+     (predict.method=="BB")|(predict.method=="LASSO")|(predict.method=="BL")|(predict.method=="BC")|(predict.method=="GBLUP")|(predict.method=="BRNN")|
+     (predict.method=="MKRKHS")|(predict.method=="RF")|(predict.method=="BRR")|(predict.method=="RKHS")|(predict.method=="ALL"))
+  {
+    
+    
     
     if(predict.method=="GBLUP"){ 
       
       message("Predict by GBLUP...")
-     # time.gblup = system.time(GBLUP <-runCV(pheno,geno_shrink,pop.reduct.method,rps,predictor_GBLUP,nFolds,nTimes))
-	  time.gblup = system.time(GBLUP <-runCV(pheno,geno_shrink,FIXED,pop.reduct.method,rps,predict_GBLUP,nFolds,nTimes))
+      # time.gblup = system.time(GBLUP <-runCV(pheno,geno_shrink,pop.reduct.method,rps,predictor_GBLUP,nFolds,nTimes))
+      time.gblup = system.time(GBLUP <-runCV(pheno,geno_shrink,FIXED,pop.reduct.method,rps,predict_GBLUP,nFolds,nTimes))
       message("Predict by GBLUP...ended.")
       time.cal <- time.gblup
       ncol_geno_shrink <- ncol(geno_shrink)
       Results <- transfer(GBLUP,time.cal,ncol_geno_shrink)
       
     } 
-
-   if(predict.method=="EGBLUP"){ 
+    
+    if(predict.method=="EGBLUP"){ 
       
       message("Predict by EGBLUP...")
       time.egblup = system.time(EGBLUP <-runCV(pheno,geno_shrink,FIXED,pop.reduct.method,rps=0,predict_EGBLUP,nFolds,nTimes))
@@ -395,10 +387,10 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       time.cal <- time.rf
       ncol_geno_shrink <- ncol(geno_shrink)
       Results <- transfer(RF,time.cal,ncol_geno_shrink)
-        
+      
     } 
-	
-	if(predict.method=="BRNN"){ 
+    
+    if(predict.method=="BRNN"){ 
       
       message("Predict by BRNN...")
       time.brnn = system.time(BRNN <-runCV(pheno,geno_shrink,FIXED="NULL",pop.reduct.method,rps,predict_BRNN,nFolds,nTimes))
@@ -439,8 +431,8 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       Results <- transfer(RR,time.cal,ncol_geno_shrink)
       
     } 
-	
-	if(predict.method=="BRR"){  #Bayesian Ridge Regression#
+    
+    if(predict.method=="BRR"){  #Bayesian Ridge Regression#
       message("Predicting by BRR (Bayesian Ridge Regression)...")
       time.brr = system.time(BRR <-runCV(pheno,geno_shrink,FIXED,pop.reduct.method,rps,predict_BRR,nFolds,nTimes))
       message("Predict by BRR...ended.")
@@ -449,7 +441,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       Results <- transfer(BRR,time.cal,ncol_geno_shrink)
       
     } 
-	
+    
     
     if(predict.method=="LASSO"){  #LASSO Regression#
       message("Predicting by LASSO ...")
@@ -471,8 +463,8 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     
     if(predict.method=="BA"){  #BayesianC regression#
       message("Predicting by BayesA ...")
-     # time.ba= system.time(BA <-runCV(pheno,geno_shrink,pop.reduct.method,rps,predictor_BA,nFolds,nTimes))
-	 time.ba= system.time(BA <-runCV(pheno,geno_shrink,FIXED,pop.reduct.method,rps,predict_BA,nFolds,nTimes))
+      # time.ba= system.time(BA <-runCV(pheno,geno_shrink,pop.reduct.method,rps,predictor_BA,nFolds,nTimes))
+      time.ba= system.time(BA <-runCV(pheno,geno_shrink,FIXED,pop.reduct.method,rps,predict_BA,nFolds,nTimes))
       message("Predict by BayesA...ended.")
       time.cal <- time.ba
       ncol_geno_shrink <- ncol(geno_shrink)
@@ -517,28 +509,26 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       Results <- transfer(SVM,time.cal,ncol_geno_shrink)
     } 
     
-    Results
-    
     #FOR ALL PREDICTION METHODS:
     
-  
-  if (predict.method=="ALL")
-  {
+    
+    if (predict.method=="ALL")
+    {
       
       message("Predict by all methods...")
       time.all = system.time(GSALL <-Run_All_Cross_Validation(pheno,geno_shrink,nFolds,nTimes))
       message("Predict by ALL METHODS...ended.")
       time.cal <- time.all
       ncol_geno_shrink <- ncol(geno_shrink)
-     # Results <- transfer(GSALL,time.cal,ncol_geno_shrink)
-	 Results <- GSALL
-    Results
-  }
+      # Results <- transfer(GSALL,time.cal,ncol_geno_shrink)
+      Results <- GSALL
+      Results
+    }
   } 
   
- #  else {stop("Please choose a predict method: EN,SVM,RR,EGBLUP, BA, BB, BC, BL, LASSO,GBLUP, RKHS, RF.")} # End of all predict methods
-    
- else {stop("Please choose a predict method: EN,SVM,RR,LASSO,rrBLUP, RKHS, RF.")} # End of all predict methods
+  #  else {stop("Please choose a predict method: EN,SVM,RR,EGBLUP, BA, BB, BC, BL, LASSO,GBLUP, RKHS, RF.")} # End of all predict methods
+  
+  else {stop("Please choose a predict method: EN,SVM,RR,LASSO,rrBLUP, RKHS, RF.")} # End of all predict methods
   
   
   Results
@@ -547,42 +537,63 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
 
 percentNA=function(x)
 {
-perNA=length(x[is.na(x)])/length(x)
-perNA
+  perNA=length(x[is.na(x)])/length(x)
+  perNA
 }
-
-myMean=function(x)
-{
-
-DENO=x[!is.na(x)]
-NUME=DENO[DENO>0]
-M=length(NUME)/length(DENO)
-
-M
-}
-
-
-
-
 
 #/////////////////////////////////////////////////////////////////////
 #START bwgs.predict TO BE USED ONCE the best model is chosen using bwgs.cv
 #/////////////////////////////////////////////////////////////////////
 
+myMean=function(x)
+{
+  
+  DENO=x[!is.na(x)]
+  NUME=DENO[DENO>0]
+  M=length(NUME)/length(DENO)
+  
+  M
+}
+
+
+
+
+
+#' Title
+#'
+#' @param geno_train 
+#' @param pheno_train 
+#' @param geno_target 
+#' @param FIXED_train 
+#' @param FIXED_target 
+#' @param MAXNA 
+#' @param MAF 
+#' @param geno.reduct.method 
+#' @param reduct.size 
+#' @param r2 
+#' @param pval 
+#' @param MAP 
+#' @param geno.impute.method 
+#' @param predict.method 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",FIXED_target="NULL",MAXNA=0.2,MAF=0.05,geno.reduct.method="NULL",reduct.size="NULL",r2="NULL",pval="NULL",
-MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP") 
+                         MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP") 
 {
   #(c)2015 louis.gautier.tran@gmail.com & gilles.charmet@clermont.inra.fr
   message("2017 BWGS  - Version 1.6.0 Release date: 31/02/2017")
   #message("2015 Gilles Charmet & Louis Gautier Tran)
   
-   # upload the necessary libraries
+  # upload the necessary libraries
   
-	library(rrBLUP)
-	library(BGLR)
-	library(glmnet)
-	library(e1071) 
-	library(randomForest)
+  library(rrBLUP)
+  library(BGLR)
+  library(glmnet)
+  library(e1071) 
+  library(randomForest)
   
   
   #message("")
@@ -602,97 +613,97 @@ MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP")
   #  select common markers in train and target matrices
   # FILTER according to MAF and MAXNA
   #//////////////////////////////////////////////////////////////
- 
-	if(MAP!="NULL")
-	{
-	MAPPED_markers=intersect(rownames(MAP),colnames(geno_train))
-	
-	MAP=MAP[MAPPED_markers,]
-	geno_train=geno_train[,MAPPED_markers]
-	}
-	
-	if(FIXED_train!="NULL")
-	{
-	genoTRFIX=intersect(rownames(FIXED_train),rownames(geno_train))
-	
-	FIXED_train=FIXED_train[genoTRFIX,]
-	geno_train=geno_train[genoTRFIX,]
-	}
- 
-   if(FIXED_target!="NULL")
-	{
-	genoTAFIX=intersect(rownames(FIXED_target),rownames(geno_target))
-	
-	FIXED_target=FIXED_target[genoTAFIX,]
-	geno_target=geno_target[genoTAFIX,]
-	}
- 
- 
-    pheno_train=pheno_train[!is.na(pheno_train)]
-	listGENO=rownames(geno_train)
-	listPHENO=names(pheno_train)
-	LIST=intersect(listGENO,listPHENO)
-
-	if (length(LIST)==0)
-	{stop("NO COMMON LINE BETWENN geno AND pheno")}
-	else
-	{
-	geno_train=geno_train[LIST,]
-	pheno_train=pheno_train[LIST]
-	new.pheno.size=length(LIST)
- 	message("Number of common lines between geno and pheno")
-      print(new.pheno.size)
-	  
-	  if(FIXED_train!="NULL")
-	{
-	genoTRFIX=intersect(rownames(FIXED_train),rownames(geno_train))
-	FIXED_train=FIXED_train[genoTRFIX,]
-	geno_train=geno_train[genoTRFIX,]
-	}
-	  
-	  
-	}
+  
+  if(MAP!="NULL")
+  {
+    MAPPED_markers=intersect(rownames(MAP),colnames(geno_train))
+    
+    MAP=MAP[MAPPED_markers,]
+    geno_train=geno_train[,MAPPED_markers]
+  }
+  
+  if(FIXED_train!="NULL")
+  {
+    genoTRFIX=intersect(rownames(FIXED_train),rownames(geno_train))
+    
+    FIXED_train=FIXED_train[genoTRFIX,]
+    geno_train=geno_train[genoTRFIX,]
+  }
+  
+  if(FIXED_target!="NULL")
+  {
+    genoTAFIX=intersect(rownames(FIXED_target),rownames(geno_target))
+    
+    FIXED_target=FIXED_target[genoTAFIX,]
+    geno_target=geno_target[genoTAFIX,]
+  }
   
   
-    marker_train=colnames(geno_train)
-	marker_target=colnames(geno_target)
-	marker_common=intersect(marker_train,marker_target)
-    geno_train=geno_train[,marker_common]
-	geno_target=geno_target[,marker_common]
-	
-	geno <- rbind(geno_train,geno_target)
+  pheno_train=pheno_train[!is.na(pheno_train)]
+  listGENO=rownames(geno_train)
+  listPHENO=names(pheno_train)
+  LIST=intersect(listGENO,listPHENO)
+  
+  if (length(LIST)==0)
+  {stop("NO COMMON LINE BETWENN geno AND pheno")}
+  else
+  {
+    geno_train=geno_train[LIST,]
+    pheno_train=pheno_train[LIST]
+    new.pheno.size=length(LIST)
+    message("Number of common lines between geno and pheno")
+    print(new.pheno.size)
+    
+    if(FIXED_train!="NULL")
+    {
+      genoTRFIX=intersect(rownames(FIXED_train),rownames(geno_train))
+      FIXED_train=FIXED_train[genoTRFIX,]
+      geno_train=geno_train[genoTRFIX,]
+    }
+    
+    
+  }
+  
+  
+  marker_train=colnames(geno_train)
+  marker_target=colnames(geno_target)
+  marker_common=intersect(marker_train,marker_target)
+  geno_train=geno_train[,marker_common]
+  geno_target=geno_target[,marker_common]
+  
+  geno <- rbind(geno_train,geno_target)
   geno_train_nrows <- nrow(geno_train)
   geno_target_nrows=nrow(geno_target)
   geno_nrows <- nrow(geno)
-	
-	if(FIXED_train!="NULL")
-	{
-	FIXED <- rbind(FIXED_train,FIXED_target)
-	FIXED <-MNI(FIXED)
-	FIXED <-round(FIXED)
-	}
-	
-	# FILTERING GENOTYPING MATRIX
-	# for % NA per marker
-
-	markerNA=apply(geno,2,percentNA)
-	geno=geno[,markerNA<MAXNA]
-
-	freqSNP=apply(geno,2,myMean)
-	geno=geno[,freqSNP>MAF & freqSNP<(1-MAF)]
-
-	new.geno.size=dim(geno)
-	message("Number of markers after filtering")
-      print(new.geno.size)
   
-	if(MAP!="NULL")
-	{
-	MAP=MAP[colnames(geno),]
-	}
+  if(FIXED_train!="NULL")
+  {
+    FIXED <- rbind(FIXED_train,FIXED_target)
+    FIXED <-MNI(FIXED)
+    FIXED <-round(FIXED)
+  }
   
- 
+  # FILTERING GENOTYPING MATRIX
+  # for % NA per marker
   
- #//////////////////////////////////////////////////////////////
+  markerNA=apply(geno,2,percentNA)
+  geno=geno[,markerNA<MAXNA]
+  
+  freqSNP=apply(geno,2,myMean)
+  geno=geno[,freqSNP>MAF & freqSNP<(1-MAF)]
+  
+  new.geno.size=dim(geno)
+  message("Number of markers after filtering")
+  print(new.geno.size)
+  
+  if(MAP!="NULL")
+  {
+    MAP=MAP[colnames(geno),]
+  }
+  
+  
+  
+  #//////////////////////////////////////////////////////////////
   #Step 1: Imputation "MNI" or "EMI"
   #//////////////////////////////////////////////////////////////
   
@@ -702,64 +713,64 @@ MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP")
     if(geno.impute.method=="MNI"){ 
       
       
-        time.mni = system.time(geno_impute <- MNI(geno))
-        time.mni.impute = as.numeric(round(time.mni[3]/60,digits=2))
-        message("Imputed by MNI.")
-        message("Time of imputation by MNI (mins):")
-        print(time.mni.impute)
+      time.mni = system.time(geno_impute <- MNI(geno))
+      time.mni.impute = as.numeric(round(time.mni[3]/60,digits=2))
+      message("Imputed by MNI.")
+      message("Time of imputation by MNI (mins):")
+      print(time.mni.impute)
       
       message("A part 5x20 of Imputed genotypic matrix:")
       print(geno_impute[1:5,1:20],quote=FALSE)
       message("")
     } 
-	
+    
     
     if(geno.impute.method=="EMI")
-	{ 
+    { 
       
-        # emi.time.start = system.time()
-        # geno_impute <- EMI(geno_shrink)
-        # emi.time.stop = system.time()
-        time.emi = system.time(geno_impute <- EMI(geno))
-        time.emi.impute = as.numeric(round(time.emi[3]/60,digits=2))
-        message("Imputed by EMI.")
-        message("Time of imputation by EMI (mins):")
-        print(time.emi.impute)
-	  
+      # emi.time.start = system.time()
+      # geno_impute <- EMI(geno_shrink)
+      # emi.time.stop = system.time()
+      time.emi = system.time(geno_impute <- EMI(geno))
+      time.emi.impute = as.numeric(round(time.emi[3]/60,digits=2))
+      message("Imputed by EMI.")
+      message("Time of imputation by EMI (mins):")
+      print(time.emi.impute)
+      
       message("A part 5x20 of Imputed genotypic matrix:")
       print(geno_impute[1:5,1:20],quote=FALSE)
       message("")
-	  
+      
     }
-   
-        message("Imputed by MNI, EMI...finished.")
-      geno=geno_impute
-     geno_train_impute=geno[1:geno_train_nrows,]
-	 geno_valid_impute=geno[(geno_train_nrows+1):geno_nrows,]
-	 
-	 if(FIXED_train!="NULL")
-	{
-	  FIXED_train=FIXED[1:geno_train_nrows,]
-	  FIXED_target=FIXED[(geno_train_nrows+1):geno_nrows,]
+    
+    message("Imputed by MNI, EMI...finished.")
+    geno=geno_impute
+    geno_train_impute=geno[1:geno_train_nrows,]
+    geno_valid_impute=geno[(geno_train_nrows+1):geno_nrows,]
+    
+    if(FIXED_train!="NULL")
+    {
+      FIXED_train=FIXED[1:geno_train_nrows,]
+      FIXED_target=FIXED[(geno_train_nrows+1):geno_nrows,]
     } 
-    }
+  }
   else {stop("Please choose an impute method: NULL, MNI, EMI ")
   } #If not chosen an impute method
-
- 
+  
+  
   
   #geno.impute.method can be = "MNI", "EMI"
   #predict.method can be = "LASSO","SVM","BA","BB","BC","RR"(Ridge Regression), "rrBLUP", "RKHS", "MKHS", "EN" (Elastic-Net) 
   #geno.reduct.method can be = "RMR","ANO","LD", "NULL"
   #
   
-    #///////////////////////////////////////////////////////////////
+  #///////////////////////////////////////////////////////////////
   #STEP 2: reduction OF THE DATA (reduire les donnees)
   #//////////////////////////////////////////////////////////////
   
-
-   if((geno.reduct.method=="NULL")|(geno.reduct.method=="RMR")|(geno.reduct.method=="ANO")|(geno.reduct.method=="LD")|(geno.reduct.method=="ANO+LD")) 
-   { 
+  
+  if((geno.reduct.method=="NULL")|(geno.reduct.method=="RMR")|(geno.reduct.method=="ANO")|(geno.reduct.method=="LD")|(geno.reduct.method=="ANO+LD")) 
+  { 
     
     if(geno.reduct.method=="NULL"){ 
       geno_shrink <- geno 
@@ -787,20 +798,20 @@ MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP")
       }  else {stop("Please choose the size of columns for new genotypic data.")}
       
     }
-
-
+    
+    
     if(geno.reduct.method=="ANO"){   
       
       #if(is.null(reduct.size)) {stop("Please choose the size of columns for new genotypic data.")}
       
       if(!is.null(pval)){
-      
+        
         time.ano = system.time(genoTrain_shrink <- ANO(pheno_train,geno_train_impute,pval))
         time.ano.reduct = as.numeric(round(time.ano[3]/60,digits=2))
-		genoTrain_shrink=genoTrain_shrink[,!is.na(colnames(genoTrain_shrink))]
-		genoValid_shrink=geno_valid_impute[,colnames(genoTrain_shrink)]
-		geno_shrink=rbind(genoTrain_shrink,genoValid_shrink)
-		
+        genoTrain_shrink=genoTrain_shrink[,!is.na(colnames(genoTrain_shrink))]
+        genoValid_shrink=geno_valid_impute[,colnames(genoTrain_shrink)]
+        geno_shrink=rbind(genoTrain_shrink,genoValid_shrink)
+        
         new.geno.size <- dim(geno_shrink)
         
         message("Reduced by ANO. New genotypic data dimension:")
@@ -812,105 +823,105 @@ MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP")
       }  else {stop("Please choose the p value for new genotypic data.")}
       
     }
-
-	    if(geno.reduct.method=="ANO+LD")
-	{    
+    
+    if(geno.reduct.method=="ANO+LD")
+    {    
       if(!is.null(pval))
-	  {
-      
+      {
+        
         time.ano = system.time(genoTrain_shrinkANO <- ANO(pheno_train,geno_train_impute,pval))
         time.ano.reduct = as.numeric(round(time.ano[3]/60,digits=2))
-		genoTrain_shrinkANO=genoTrain_shrinkANO[,!is.na(colnames(geno_shrinkANO))]
-		genoValid_shrinkANO=geno_valid_impute[,colnames(genoTrain_shrink)]
-		geno_shrinkANO=rbind(genoTrain_shrink,genoValid_shrink)
-
-		
-		}  else {stop("Please choose the p value for new genotypic data.")}
-		
-	if(MAP=="NULL")
-	{
-	stop("Please choose the r2 and/or MAP for LD reduction.")
-    } # END OF LD reduction
-	
-        MAP2=MAP[colnames(geno_shrinkANO),]
-		time.chrld = system.time(geno_shrink <- CHROMLD(geno_shrinkANO,R2seuil,MAP2))
-        time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
-        new.geno.size <- dim(geno_shrink)
-        #geno_shrink
-		time.anold.reduct=time.ano.reduct+time.chrld.reduct
-        new.geno.size <- dim(geno_shrink)
-        #geno_shrink
-        message("Reduced by ANO + CHROMLD. New genotypic data dimension:")
-        print(new.geno.size)
-        message("")
-        message("Time of reduction by ANO+ LD (mins):")
-        print(time.anold.reduct)
-			      
-    }
-	
-	
-    if(geno.reduct.method=="LD")
-	{
-	if(MAP=="NULL")
-	{
-      stop("Please choose MAP for LD reduction.")
-    } # END OF LD reduction
-	
-	
-		MAP2=MAP[colnames(geno_shrinkANO),]
-        time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil,MAP))
-        time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
-        new.geno.size <- dim(geno_shrink)
-        #geno_shrink
-        message("Reduced by CHROMLD. New genotypic data dimension:")
-        print(new.geno.size)
-        message("")
-        message("Time of reduction by CHROMLD (mins):")
-        print(time.chrld.reduct)
-     }
-	  
+        genoTrain_shrinkANO=genoTrain_shrinkANO[,!is.na(colnames(geno_shrinkANO))]
+        genoValid_shrinkANO=geno_valid_impute[,colnames(genoTrain_shrink)]
+        geno_shrinkANO=rbind(genoTrain_shrink,genoValid_shrink)
         
-
+        
+      }  else {stop("Please choose the p value for new genotypic data.")}
+      
+      if(MAP=="NULL")
+      {
+        stop("Please choose the r2 and/or MAP for LD reduction.")
+      } # END OF LD reduction
+      
+      MAP2=MAP[colnames(geno_shrinkANO),]
+      time.chrld = system.time(geno_shrink <- CHROMLD(geno_shrinkANO,R2seuil,MAP2))
+      time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
+      new.geno.size <- dim(geno_shrink)
+      #geno_shrink
+      time.anold.reduct=time.ano.reduct+time.chrld.reduct
+      new.geno.size <- dim(geno_shrink)
+      #geno_shrink
+      message("Reduced by ANO + CHROMLD. New genotypic data dimension:")
+      print(new.geno.size)
+      message("")
+      message("Time of reduction by ANO+ LD (mins):")
+      print(time.anold.reduct)
+      
+    }
+    
+    
+    if(geno.reduct.method=="LD")
+    {
+      if(MAP=="NULL")
+      {
+        stop("Please choose MAP for LD reduction.")
+      } # END OF LD reduction
+      
+      
+      MAP2=MAP[colnames(geno_shrinkANO),]
+      time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil,MAP))
+      time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
+      new.geno.size <- dim(geno_shrink)
+      #geno_shrink
+      message("Reduced by CHROMLD. New genotypic data dimension:")
+      print(new.geno.size)
+      message("")
+      message("Time of reduction by CHROMLD (mins):")
+      print(time.chrld.reduct)
+    }
+    
+    
+    
     # END OF LD reduction
     
-   geno=geno_shrink
-   geno_train_impute=geno[1:geno_train_nrows,]
-	geno_valid_impute=geno[(geno_train_nrows+1):geno_nrows,]
-	
-	if(FIXED_train!="NULL")
-	{
-	FIXED_train=FIXED[1:geno_train_nrows,]
-	  FIXED_target=FIXED[(geno_train_nrows+1):geno_nrows,]
+    geno=geno_shrink
+    geno_train_impute=geno[1:geno_train_nrows,]
+    geno_valid_impute=geno[(geno_train_nrows+1):geno_nrows,]
+    
+    if(FIXED_train!="NULL")
+    {
+      FIXED_train=FIXED[1:geno_train_nrows,]
+      FIXED_target=FIXED[(geno_train_nrows+1):geno_nrows,]
     }
-   
-} # End if not chosen a reduct method
+    
+  } # End if not chosen a reduct method
   
   else {stop("BWGS Warning! Please choose a valid reduct method. Ex.: RMR, LD, LD+ANO or NULL.")} #If not choose a reduct method
   
   #End of dimension reduction for the genomic matrix 
   
- 
+  
   
   
   #/////////////////////////////////////////////////////
   #STEP 3: BREEDING VALUE PREDICTION PROCESS
   #/////////////////////////////////////////////////////
   
-if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(predict.method=="RR")|(predict.method=="BA")|
-(predict.method=="BB")|(predict.method=="LASSO")|(predict.method=="BL")|(predict.method=="BC")|(predict.method=="GBLUP")|
-(predict.method=="BRNN")|(predict.method=="MKRKHS")|(predict.method=="RF")|(predict.method=="BRR")|(predict.method=="RKHS"))
-{
-  
+  if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(predict.method=="RR")|(predict.method=="BA")|
+     (predict.method=="BB")|(predict.method=="LASSO")|(predict.method=="BL")|(predict.method=="BC")|(predict.method=="GBLUP")|
+     (predict.method=="BRNN")|(predict.method=="MKRKHS")|(predict.method=="RF")|(predict.method=="BRR")|(predict.method=="RKHS"))
+  {
+    
     if (predict.method=="GBLUP") { 
       message("Predict by GBLUP...")
       #GBLUP <-predict_GBLUP(pheno_train,geno_train_impute,geno_valid_impute)
-	#GBLUP <-predict_GBLUP(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	#genoPred=geno_valid_impute, FixedPred=FIXED_target)
-
-	GBLUP <-predict_GBLUP(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	genoPred=geno_valid_impute, FixedPred=FIXED_target)
-
-
+      #GBLUP <-predict_GBLUP(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
+      #genoPred=geno_valid_impute, FixedPred=FIXED_target)
+      
+      GBLUP <-predict_GBLUP(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
+                            genoPred=geno_valid_impute, FixedPred=FIXED_target)
+      
+      
       Results <- round(GBLUP,digits=5)
       #rownames(Results) <- "";
       message("Phenotypic estimation GEBV:")
@@ -924,11 +935,11 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       print(end.time)
       print(time.taken,title=FALSE)
     } 
-
+    
     if (predict.method=="EGBLUP") { 
       message("Predict by EGBLUP...")
       EGBLUP <-predict_EGBLUP(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                              genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(EGBLUP,digits=5)
       #rownames(Results) <- "";
       message("Phenotypic estimation GEBV:")
@@ -942,12 +953,12 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       print(end.time)
       print(time.taken,title=FALSE)
     } 
-
+    
     
     if (predict.method=="BA") { 
       message("Predict by BayesA...")
       BA <-predict_BA(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(BA,digits=5)
       #rownames(Results) <- "";
       message("Phenotypic estimation GEBV:")
@@ -966,7 +977,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="BB") { 
       message("Predict by BayesB...")
       BB <-predict_BB(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(BB,digits=5)
       #rownames(Results) <- "";
       message("Phenotypic estimation GEBV:")
@@ -984,7 +995,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="BC") { 
       message("Predict by BayesC...")
       BC <-predict_BC(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(BC,digits=5)
       #rownames(Results) <- "";
       message("Phenotypic estimation GEBV:")
@@ -1002,7 +1013,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="BL") { 
       message("Predict by Bayesian Lasso...")
       BL <-predict_BL(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(BL,digits=5)
       #rownames(Results) <- "";
       message("Phenotypic estimation GEBV:")
@@ -1020,7 +1031,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="RF") { 
       message("Predicting by RF...")
       RF <-predict_RF(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
       
       message("Predict by RF...ended.")
       Results <- round(RF,digits=5)
@@ -1040,7 +1051,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="RKHS") { 
       message("Predicting by RKHS...")
       RKHS <-predict_RKHS(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                          genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(RKHS,digits=5)
       #Results = t(Results)
       message("Predict by RKHS...ended.")
@@ -1062,10 +1073,10 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="MKRKHS") { 
       message("Predicting by Multi-kernel RKHS...")
       MKRKHS <-
-	  
-	  
-	  predict_MKRKHS(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+        
+        
+        predict_MKRKHS(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
+                       genoPred=geno_valid_impute, FixedPred=FIXED_target)
       Results <- round(MKRKHS,digits=5)
       #Results = t(Results)
       message("Predict by Multi-kernel RKHS...ended.")
@@ -1088,8 +1099,8 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="RR") { 
       message("Predicting by RR...")
       RR <-predict_RR(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
-     # RR = t(RR) 
+                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
+      # RR = t(RR) 
       #rownames(RR)="";
       message("Predict by RR...ended.")
       Results <- round(RR,digits=5)
@@ -1105,11 +1116,11 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       print(end.time)
       print(time.taken,title=FALSE)
     } 
-	
-	 if (predict.method=="BRR") { 
+    
+    if (predict.method=="BRR") { 
       message("Predicting by BRR...")
       BRR <-predict_BRR(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                        genoPred=geno_valid_impute, FixedPred=FIXED_target)
       #BRR = t(BRR) 
       #rownames(RR)="";
       message("Predict by BRR...ended.")
@@ -1126,13 +1137,13 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
       print(end.time)
       print(time.taken,title=FALSE)
     } 
-	
-	
-	if (predict.method=="BRNN") { 
+    
+    
+    if (predict.method=="BRNN") { 
       message("Predicting by BRNN...")
       BRNN <-predict_BRNN(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
-     
+                          genoPred=geno_valid_impute, FixedPred=FIXED_target)
+      
       message("Predict by BRNN...ended.")
       Results <- round(BRNN,digits=5)
       #rownames(Results) <- "";
@@ -1151,7 +1162,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="LASSO") { 
       message("Predicting by LASSO...")
       LASSO <-predict_Lasso(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                            genoPred=geno_valid_impute, FixedPred=FIXED_target)
       #LASSO = t(LASSO) 
       #rownames(LASSO)="";
       #rownames(LASSO)=rownames(geno_valid_impute)
@@ -1173,7 +1184,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="EN") { 
       message("Predicting by Elastic-Net...")
       ElasticNet <-predict_ElasticNet(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                                      genoPred=geno_valid_impute, FixedPred=FIXED_target)
       #ElasticNet = t(ElasticNet)
       #rownames(ElasticNet)=""
       message("Predict by Elastic-Net...ended.")
@@ -1194,7 +1205,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     if (predict.method=="SVM") { 
       message("Predicting by SVM...")
       SVM <-predict_SVM(phenoTrain=pheno_train, genoTrain=geno_train_impute, FixedTrain=FIXED_train, 
-	  genoPred=geno_valid_impute, FixedPred=FIXED_target)
+                        genoPred=geno_valid_impute, FixedPred=FIXED_target)
       #SVM = t(SVM)
       #rownames(SVM)=""
       message("Predict by SVM...ended.")
@@ -1219,7 +1230,7 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
     
     
   } else {
-  stop("Please choose a predict method: EN, SVM, BRNN, BRR, RR, LASSO, GBLUP,EGBLUP, RKHS, MKRKHS,BA, BB, BC, BL, RF")
+    stop("Please choose a predict method: EN, SVM, BRNN, BRR, RR, LASSO, GBLUP,EGBLUP, RKHS, MKRKHS,BA, BB, BC, BL, RF")
   } # End of all predict methods
   
   return(Results)
@@ -1236,15 +1247,15 @@ if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(pr
 #////////////////////////////////////////////////////////////
 
 AM <- function(geno,arg.A.mat=list(min.MAF=NULL,max.missing=NULL,impute.method="mean",tol=0.02,n.core=1,shrink=TRUE,return.imputed=TRUE))
- {
-
+{
+  
   
   #Shrink_result = A.mat(X=geno, impute.method = "mean", tol = 0.02, return.imputed = FALSE)$A
-#library(rrBLUP)
+  #library(rrBLUP)
   Shrink_result = A.mat(X=geno, impute.method = "mean", tol = 0.02,n.core=1,shrink=TRUE,return.imputed = TRUE)$A
- # Shrink_result = A.mat,args=c(X=geno,arg.A.mat))$A
+  # Shrink_result = A.mat,args=c(X=geno,arg.A.mat))$A
   return(Shrink_result)  
- }
+}
 
 
 #///////////////////////////////////////
@@ -1252,7 +1263,7 @@ AM <- function(geno,arg.A.mat=list(min.MAF=NULL,max.missing=NULL,impute.method="
 #///////////////////////////////////////
 
 RMR <- function(geno,N) 
-
+  
 {
   ncolG <- ncol(geno)
   V <- sample(1:ncolG,N,replace=F)
@@ -1266,36 +1277,36 @@ RMR <- function(geno,N)
 
 ANO <- function(P,GG,pval) 
 {
-
-#Genotypic Reduction by Association (ANOVA)
-#(c)15/06/2015 G. CHARMET & V.G. TRAN
-#GG = geno
-#P = pheno
-#genotypes and phenotypes must not have NAs
-
-listF = ANOV(P,GG)
-names(listF)=colnames(GG)
-ChoixM = GG[,listF < pval&!is.na(listF)]
-dim(ChoixM)
-ChoixM
+  
+  #Genotypic Reduction by Association (ANOVA)
+  #(c)15/06/2015 G. CHARMET & V.G. TRAN
+  #GG = geno
+  #P = pheno
+  #genotypes and phenotypes must not have NAs
+  
+  listF = ANOV(P,GG)
+  names(listF)=colnames(GG)
+  ChoixM = GG[,listF < pval&!is.na(listF)]
+  dim(ChoixM)
+  ChoixM
 }
 
 # function to run ANOVA
 ANOV <- function(P,GG)
-	{
-	TESTF=rep(0,ncol(GG))
-	 for (i in 1:ncol(GG))
-		{
-		GGi=GG[,i]
-		names(GGi)=rownames(GG)
-		GGii=GGi[!is.na(GGi)]
-		Pi=P[!is.na(GGi)]
-		AOV=anova(lm(Pi~GGii))
-		TEST=AOV["Pr(>F)"][1]
-		TESTF[i]=c(TEST)[[1]][1]
-		}
-	return(TESTF)
-	}
+{
+  TESTF=rep(0,ncol(GG))
+  for (i in 1:ncol(GG))
+  {
+    GGi=GG[,i]
+    names(GGi)=rownames(GG)
+    GGii=GGi[!is.na(GGi)]
+    Pi=P[!is.na(GGi)]
+    AOV=anova(lm(Pi~GGii))
+    TEST=AOV["Pr(>F)"][1]
+    TESTF[i]=c(TEST)[[1]][1]
+  }
+  return(TESTF)
+}
 
 #////////////////////////////////////////////////////////////////////////////////////
 # LD  function to select markers based on LD: eliminate pairs with highest LD rd
@@ -1313,65 +1324,65 @@ ANOV <- function(P,GG)
 
 NEWLD <- function(geno,R2seuil)
 {
-	genoNA=MNI(geno)
-	CORLD=cor(genoNA,use="pairwise.complete.obs")
-	CORLD=abs(CORLD)
-	diag(CORLD)=0
-	CORLD[is.na(CORLD)]<-0
-#	CORLD[upper.tri(CORLD)]<-0
-	range(CORLD)
-	geno_LD=CORLD
-	R2maxRow=apply(geno_LD,1,max)
-	R2maxCol=apply(geno_LD,2,max)
-	
-	geno_LD=geno_LD[R2maxRow<R2seuil,R2maxCol<R2seuil]
-    #geno_final=NEWLD_clean(geno,CORLD,R2seuil=R2seuil)
-	geno_LD=geno[,colnames(geno_LD)]
-
-return(geno_LD)
+  genoNA=MNI(geno)
+  CORLD=cor(genoNA,use="pairwise.complete.obs")
+  CORLD=abs(CORLD)
+  diag(CORLD)=0
+  CORLD[is.na(CORLD)]<-0
+  #	CORLD[upper.tri(CORLD)]<-0
+  range(CORLD)
+  geno_LD=CORLD
+  R2maxRow=apply(geno_LD,1,max)
+  R2maxCol=apply(geno_LD,2,max)
+  
+  geno_LD=geno_LD[R2maxRow<R2seuil,R2maxCol<R2seuil]
+  #geno_final=NEWLD_clean(geno,CORLD,R2seuil=R2seuil)
+  geno_LD=geno[,colnames(geno_LD)]
+  
+  return(geno_LD)
 }
 
- #/////////////////////////////////////////////////////////////////////////////////////////////
-  #NEWLD clean function: another function for stepwise elimination of markers with the highest LD
-  #  can be VERY llong for large matrices
-  #/////////////////////////////////////////////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////////////////////////////////////
+#NEWLD clean function: another function for stepwise elimination of markers with the highest LD
+#  can be VERY llong for large matrices
+#/////////////////////////////////////////////////////////////////////////////////////////////
 
 # @param geno_data is the genotyping matrix with markers in columns
 #
 
-  NEWLD_clean <- function(geno_data,CORLD,R2seuil) 
-
+NEWLD_clean <- function(geno_data,CORLD,R2seuil) 
+  
 {
-   #  R2seuil=lambda
-    # function to select a subset of marker from columns of geno_data
-    # so that maximum r2 between pairs of markers is < R2seuil
-    # LD is output matrix from LD.Measures of package LDcorSV with supinfo=TRUE
-    # typeR2 is the type of R2: "N" for "normal", "V" for relationship corrected 
-    # "S" for structure corrected and "SV" for both corrections S+V
-    
-    marker2remove=character()# to cumulate markers to be removed from the geno_data
+  #  R2seuil=lambda
+  # function to select a subset of marker from columns of geno_data
+  # so that maximum r2 between pairs of markers is < R2seuil
+  # LD is output matrix from LD.Measures of package LDcorSV with supinfo=TRUE
+  # typeR2 is the type of R2: "N" for "normal", "V" for relationship corrected 
+  # "S" for structure corrected and "SV" for both corrections S+V
   
-	geno_LD=CORLD
-   # R2max=max(geno_LD)
-    
-	R2maxRow=apply(geno_LD,1,max)
-	R2maxCol=apply(geno_LD,2,max)
+  marker2remove=character()# to cumulate markers to be removed from the geno_data
+  
+  geno_LD=CORLD
+  # R2max=max(geno_LD)
+  
+  R2maxRow=apply(geno_LD,1,max)
+  R2maxCol=apply(geno_LD,2,max)
+  
+  geno_LD=geno_LD[R2maxRow<R2seuil,R2maxCol<R2seuil]
+  
+  
+  
+  #geno_LD
+  
+  Newgeno_data<-geno_data[,colnames(geno_LD)]
+  
+  #output
+  return(Newgeno_data)
+}
 
-	geno_LD=geno_LD[R2maxRow<R2seuil,R2maxCol<R2seuil]
-	
-    
-    
-    #geno_LD
- 
-    Newgeno_data<-geno_data[,colnames(geno_LD)]
-    
-    #output
-    return(Newgeno_data)
-  }
-  
 
-  
-  
+
+
 
 
 #/////////////////////////////////////////////////////////////////////////////
@@ -1381,27 +1392,27 @@ return(geno_LD)
 
 CHROMLD <- function(geno,R2seuil,MAP) 
 { 
-geno_test <- geno
-chrom=MAP[,"chrom"]
-
-Nchrom <- unique(chrom)
-
-M = list()
-E = list()
-
-for (i in Nchrom)
-{
-M[[i]] = geno_test[,chrom==i]
-E[[i]] = NEWLD(M[[i]],R2seuil)
-
-}
-
-E_tout <- do.call(cbind,E) # See function: do.call(rbind,"list of matrices")
-
-#E_tout <- LD(E_tout,lambda) # LD them mot lan nua cua matran ghep de loai bo cac cap marker co LD trong N matrices
-
-return(E_tout)
-
+  geno_test <- geno
+  chrom=MAP[,"chrom"]
+  
+  Nchrom <- unique(chrom)
+  
+  M = list()
+  E = list()
+  
+  for (i in Nchrom)
+  {
+    M[[i]] = geno_test[,chrom==i]
+    E[[i]] = NEWLD(M[[i]],R2seuil)
+    
+  }
+  
+  E_tout <- do.call(cbind,E) # See function: do.call(rbind,"list of matrices")
+  
+  #E_tout <- LD(E_tout,lambda) # LD them mot lan nua cua matran ghep de loai bo cac cap marker co LD trong N matrices
+  
+  return(E_tout)
+  
 }
 #
 
@@ -1456,13 +1467,13 @@ RPS <- function(geno,N)
 #/////////////////////////////////////////////////////////////////////////////////////
 
 #EMI <- function(geno,arg.A.mat=list(impute.method = "EM", tol = 0.02, return.imputed = TRUE)) 
- EMI <- function(geno) 
+EMI <- function(geno) 
 {
   library(rrBLUP)
- 
-
+  
+  
   #EMI_result= do.call(rrBLUP::A.mat,args=c(X=geno, arg.A.mat))$imputed
-   EMI_result= A.mat(X=geno, impute.method = "EM", tol = 0.02, return.imputed = TRUE)$imputed
+  EMI_result= A.mat(X=geno, impute.method = "EM", tol = 0.02, return.imputed = TRUE)$imputed
   return(EMI_result)
   
 }
@@ -1482,20 +1493,20 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
   
   #start.time.cv <- Sys.time()
   
-	listGENO=rownames(geno)
-	listPHENO=names(pheno)
-	LIST=intersect(listGENO,listPHENO)
-
-	if (length(LIST)==0)
-	{stop("NO COMMON LINE BETWENN geno AND pheno")}
-	else
-	{
-	geno=geno[LIST,]
-	pheno=pheno[LIST]
-	new.pheno.size=length(LIST)
- 	message("Number of common lines between geno and pheno")
-      print(new.pheno.size)
-	}
+  listGENO=rownames(geno)
+  listPHENO=names(pheno)
+  LIST=intersect(listGENO,listPHENO)
+  
+  if (length(LIST)==0)
+  {stop("NO COMMON LINE BETWENN geno AND pheno")}
+  else
+  {
+    geno=geno[LIST,]
+    pheno=pheno[LIST]
+    new.pheno.size=length(LIST)
+    message("Number of common lines between geno and pheno")
+    print(new.pheno.size)
+  }
   
   notIsNA <- !is.na(pheno) # 
   pheno <- pheno[notIsNA] ## 
@@ -1518,7 +1529,7 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
     
     cvPred <- rep(NA, nObs)
     folds <- sample(rep(1:nFolds, length.out=nObs))
-
+    
     for (fold in 1:nFolds) {
       phenoTrain <- pheno[folds != fold]
       genoTrain <- geno[folds != fold,]
@@ -1531,12 +1542,12 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
       #accu <- round(cor(pred,valid),digits=2) # them vao 21/11/2014
       corr <- cor(pred,valid)
       ACCU[fold] <- round(corr[1],digits=2)# 04/05/2015 VG TRAN
-
+      
       message("")  # them vao 21/11/2014
       #                 # cat(c("cv for fold",fold,"is:",accu)) # them vao 21/11/2014
       #message(c("cv correlation for fold ",fold," is: ",accu)) # them vao 21/11/2014
       message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
-
+      
       #           Save to a matrix time, fold, and cv correlation: 
       #  
       ##      cvTableLine <- c(time,fold,accu)
@@ -1551,7 +1562,7 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
     #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2)  # pourcentage/100%
     #saveAcc[time] <- round(cor(cvPred, pheno),digits=2) # normal
     #saveAcc[time] <- round(mean(ACCU),digits=3) # 04/05/2015 VG TRAN
-	saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+    saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
     message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
     savePred <- savePred + cvPred 
     # SD <- round(sd(saveAcc[time]),digits=4)
@@ -1592,299 +1603,299 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
   saveCD <-rep (0,nObs)
   # cvtable <- matrix(rep(0,n_row*n_col),n_row,n_col)
   # ACCU <- rep(0,nFolds) #initial de ACC pour plusieurs folds 04/05/2015 VG TRAN
-
-
+  
+  
   class_predict = list()
   class_predSD = list()
   class_CD = list()
- 
- # Predict <- rep(0, nObs)
+  
+  # Predict <- rep(0, nObs)
   #CD <- rep(0,nObs) #Coefficient of Determination
   
- # names(Predict) <- names(pheno)
+  # names(Predict) <- names(pheno)
   #names(CD) <- names(pheno)
   
   for (time in 1:nTimes) 
-	{
-                         #   timebar <- time*100/nTimes # For Windows Time Bar#   waitingbar(runif(timebar)) # Windows Bar#   
-                         #Random Pop Size (added on 08/06/2015 V.G. TRAN)
-   ACCU <- rep(0,nFolds) #initial de ACC pour plusieurs folds 04/05/2015 VG TRAN
-
-
-				 if (pop.reduct.method=="NULL") 
-				{
-                        # nObs <- length(pheno)
-                         message("Random Pop Size  is not applied.")
-                             
-				Predict <- rep(0, nObs)
-				PredSD <-rep(0, nObs)
-				CD <-rep(0, nObs)
-                
-			
-						 
-                         
-                         folds <- sample(rep(1:nFolds, length.out=nObs))
-                         
-                         for (fold in 1:nFolds)
-								{
-                                                
-                                                phenoTrain <- pheno[folds != fold]
-                                                phenoReal <- pheno[folds == fold] 
-                                                genoTrain <- geno[folds != fold,]
-                                                genoPred <- geno[folds == fold,]
-								if (FIXED!="NULL")
-								{
-								FixedPred <- FIXED[folds == fold,]
-								FixedTrain <- FIXED[folds!=fold,]
-								pred <- predictor(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
-								}
-                                                
-                                               # pred <- predictor(phenoTrain,phenoReal, genoTrain, genoPred)
-								else {pred <- predictor(phenoTrain, genoTrain, FixedTrain="NULL", genoPred, FixedPred="NULL")}
-
-                                               
-                                                Predict[folds == fold] <- pred[,1]
-												PredSD[folds==fold] <- pred[,2]
-                                                CD[folds==fold] <- pred[,3]
-                                                
-                                                valid <- pheno[folds == fold] # pheno valid them vao 21/11/14 valid = phenoReal
-                                                # Correlation entre valid/pred 
-                                                
-                                              
-											   corr <- cor(pred[,1],valid)
-                                               ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
+  {
+    #   timebar <- time*100/nTimes # For Windows Time Bar#   waitingbar(runif(timebar)) # Windows Bar#   
+    #Random Pop Size (added on 08/06/2015 V.G. TRAN)
+    ACCU <- rep(0,nFolds) #initial de ACC pour plusieurs folds 04/05/2015 VG TRAN
+    
+    
+    if (pop.reduct.method=="NULL") 
+    {
+      # nObs <- length(pheno)
+      message("Random Pop Size  is not applied.")
+      
+      Predict <- rep(0, nObs)
+      PredSD <-rep(0, nObs)
+      CD <-rep(0, nObs)
+      
+      
+      
+      
+      folds <- sample(rep(1:nFolds, length.out=nObs))
+      
+      for (fold in 1:nFolds)
+      {
+        
+        phenoTrain <- pheno[folds != fold]
+        phenoReal <- pheno[folds == fold] 
+        genoTrain <- geno[folds != fold,]
+        genoPred <- geno[folds == fold,]
+        if (FIXED!="NULL")
+        {
+          FixedPred <- FIXED[folds == fold,]
+          FixedTrain <- FIXED[folds!=fold,]
+          pred <- predictor(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
+        }
+        
+        # pred <- predictor(phenoTrain,phenoReal, genoTrain, genoPred)
+        else {pred <- predictor(phenoTrain, genoTrain, FixedTrain="NULL", genoPred, FixedPred="NULL")}
+        
+        
+        Predict[folds == fold] <- pred[,1]
+        PredSD[folds==fold] <- pred[,2]
+        CD[folds==fold] <- pred[,3]
+        
+        valid <- pheno[folds == fold] # pheno valid them vao 21/11/14 valid = phenoReal
+        # Correlation entre valid/pred 
+        
+        
+        corr <- cor(pred[,1],valid)
+        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
+        
+        message("")
+        # message(c("cv correlation for fold ",fold," is: ",accu));
+        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
+        
+        # Predict[rownames(pred)] <- pred[,1]
+        # PredSD [rownames(pred)] <- pred[,2]
+        # CD[rownames(pred)] <-pred[,3]
+        
+      }  # end of fold loop
+      
+      message("")
+      class_predict[[time]] <- Predict
+      class_predSD[[time]] <- PredSD
+      class_CD[[time]] <-CD
+      timebar <- time*100/nTimes
+      waitingbar(runif(timebar))
+      
+      #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
+      saveAcc[time] <- round(cor(Predict, pheno, use="na.or.complete"),digits=3) # normal
+      saveMSEP[time] <- round(sqrt(((Predict-pheno)^2)/length(pheno)),3)
+      # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+      #saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=2) 
+      message("")
+      message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
+      savePred <- savePred + Predict
+      savePredSD <-savePredSD + PredSD
+      saveCD <- saveCD+CD
+      #savePpred=Predict
+      #savePredSD=PredSD
+      #saveCD=CD
+      
+      rm(Predict,PredSD,CD)
+    } 
+    
+    
+    
+    if(pop.reduct.method=="RANDOM")  
+    {              
+      genopop <- RPS(geno,rps) # Random Pop Size #ATTENTION: car le size de genopop est different que rps!! POURQUOI
+      new.geno.pop.size <- dim(genopop)
+      phenopop <- pheno[rownames(genopop)]
+      nObs <- rps
+      
+      message("Random Pop Size applied. New genotypic data dimension:")
+      print(new.geno.pop.size)
+      message("")
+      
+      nObs <- length(pheno)
+      
+      
+      Predict<-rep(NA,nObs)
+      CD<-rep(NA,nObs)
+      PredSD <-rep(NA,nObs)
+      
+      names(PredSD)=names(pheno)
+      names(CD)=names(pheno)
+      names(Predict)=names(pheno)
+      
+      folds <- sample(rep(1:nFolds, length.out=nObs))
+      
+      for (fold in 1:nFolds)
+      {
+        
+        genoTrain <- RPS(geno,rps)
+        phenoTrain=pheno[rownames(genoTrain)]
+        phenoReal <- pheno[!names(pheno)%in%names(phenoTrain)] 
+        genoPred <- geno[names(phenoReal),]
+        if (FIXED!="NULL")
+        {
+          FixedPred <- FIXED[folds == fold,]
+          FixedTrain <- FIXED[folds!=fold,]
+          pred <- predictor(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
+        }
+        
+        
+        
+        #pred <- predictor(phenoTrain,phenoReal, genoTrain, genoPred)
+        else {pred <- predictor(phenoTrain, genoTrain, FixedTrain="NULL", genoPred, FixedPred="NULL")}
+        #else {pred <- predictor(phenoTrain, genoTrain, genoPred)}
+        #Return cbind(GPRED,CD)
+        #pred <- predictor_rrBLUP(phenoTrain,phenoReal, genoTrain, genoPred); 
+        #Return cbind(GPRED,CD)
+        
+        
+        Predict[rownames(pred)] <- pred[,1]
+        
+        PredSD[rownames(pred)] <-pred[,2]
+        CD[rownames(pred)] <- pred[,3]
+        
+        valid <- pheno[rownames(pred)] # pheno valid them vao 21/11/14 valid = phenoReal
+        # Correlation entre valid/pred 
+        
+        # accu <- round(cor(pred[,1],phenoReal),digits=2);
+        # ACCU[fold] <- round(cor(pred,valid),digits=2)# 04/05/2015 VG TRAN
+        corr <- cor(pred[,1],valid)
+        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
+        
+        message("")
+        # message(c("cv correlation for fold ",fold," is: ",accu));
+        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
+        
+        
+      }  # fold loop
+      message("")
+      class_predict[[time]] <- Predict
+      class_predSD[[time]] <- PredSD
+      class_CD[[time]] <-CD
+      timebar <- time*100/nTimes
+      waitingbar(runif(timebar))
+      
+      #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
+      saveAcc[time] <- round(cor(Predict, pheno,use="na.or.complete"),digits=3) # normal
+      saveMSEP[time] <- round(sqrt(((Predict-pheno)^2)/length(pheno)),3)
+      #saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+      #saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=2) 
+      message("")
+      message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
+      savePred <- savePred + Predict
+      savePredSD <- savePredSD + PredSD
+      saveCD <- saveCD+CD	   
+      
+      rm(Predict,PredSD,CD)	   
+      
+      
+    }   #//////End of Random Pop Size script.
+    
+    
+    if(pop.reduct.method=="OPTI")  
+    {              
+      genopop <- optiTRAIN(geno,rps,Nopti=3000)$genoOptimiz # optimum Pop Size #ATTENTION: car le size de genopop est different que rps!! POURQUOI
+      new.geno.pop.size <- c(rps,ncol(geno))
+      phenopop <- pheno[rownames(genopop)]
+      nObs <- rps
+      
+      message("CDmean optimisation applied. New genotypic data dimension:")
+      print(new.geno.pop.size)
+      message("")
+      
+      nObs <- length(pheno)
+      
+      
+      #Predict <- rep(0,length(pheno))
+      Predict<-rep(NA,nObs)
+      CD<-rep(NA,nObs)
+      PredSD <-rep(NA,nObs)
+      #cvPred <- rep(NA, nObs)
+      #cvPredSD <-rep(NA,nObs)
+      #cvCD <- rep(NA,nObs)
+      #names(Pred)=names(pheno)
+      names(PredSD)=names(pheno)
+      names(CD)=names(pheno)
+      names(Predict)=names(pheno)
+      folds <- sample(rep(1:nFolds, length.out=nObs))
+      
+      for (fold in 1:nFolds)
+      {
+        
+        testOPTI<- optiTRAIN(geno,rps,Nopti=30) 
+        genoTrain <- testOPTI$genoOptimiz 
+        phenoTrain=pheno[rownames(genoTrain)]
+        phenoReal <- pheno[!names(pheno)%in%names(phenoTrain)] 
+        genoPred <- geno[names(phenoReal),]
+        
+        if (FIXED!="NULL")
+        {
+          FixedPred <- FIXED[rownames(genoTrain),]
+          FixedTrain <- FIXED[!rownames(FIXED)%in%names(phenoTrain),]
+          pred <- predictor(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
+        }
+        
+        
+        
+        #pred <- predictor(phenoTrain,phenoReal, genoTrain, genoPred)
+        else {pred <- predictor(phenoTrain, genoTrain, FixedTrain="NULL", genoPred, FixedPred="NULL")}
+        
+        
+        #pred <- predictor(phenoTrain, genoTrain, genoPred)
+        
+        #Return cbind(GPRED,CD)
+        #pred <- predictor_rrBLUP(phenoTrain,phenoReal, genoTrain, genoPred); 
+        #Return cbind(GPRED,CD)
+        
+        
+        Predict[rownames(pred)] <- pred[,1]
+        PredSD[rownames(pred)] <- pred[,2]
+        CD[rownames(pred)] <- pred[,3]
+        
+        valid <- pheno[rownames(pred)] # pheno valid them vao 21/11/14 valid = phenoReal
+        # Correlation entre valid/pred 
+        
+        # accu <- round(cor(pred[,1],phenoReal),digits=2);
+        # ACCU[fold] <- round(cor(pred,valid),digits=2)# 04/05/2015 VG TRAN
+        #corr <- cor(pred,valid)
+        corr <-cor(pred[,1],valid)
+        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
+        
+        message("")
+        # message(c("cv correlation for fold ",fold," is: ",accu));
+        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
+        
+        
+        
+      }
+      message("")
+      class_predict[[time]] <- Predict
+      class_predSD[[time]] <-PredSD
+      class_CD[[time]] <-CD
+      timebar <- time*100/nTimes
+      waitingbar(runif(timebar))
+      
+      
+      
+      
+      #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
+      saveAcc[time] <- round(cor(cvPred, pheno,use="pairwise.complete.obs"),digits=3) # normal
+      
+      # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+      #saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=3)
+      #saveAcc[time] <- round(cor(Predict, pheno[names(Predict)],use="na.or.complete"),digits=3)
+      saveMSEP[time] <- round(sqrt(sum((Predict-pheno)^2)/length(pheno)),3)
+      message("")
+      message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
+      savePred <- savePred + Predict
+      savePredSD <- savePredSD + PredSD
+      saveCD <- saveCD+CD	  
+      rm(Predict,PredSD,CD)    
+      
+    }   #//////End of OPTI script.
+    
+  }# end nTimes
   
-                                                message("")
-                                               # message(c("cv correlation for fold ",fold," is: ",accu));
-                                                message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
-
-                               # Predict[rownames(pred)] <- pred[,1]
-								# PredSD [rownames(pred)] <- pred[,2]
-								# CD[rownames(pred)] <-pred[,3]
-												
-								}  # end of fold loop
-								
-                         message("")
-                         class_predict[[time]] <- Predict
-						 class_predSD[[time]] <- PredSD
-						 class_CD[[time]] <-CD
-                         timebar <- time*100/nTimes
-                         waitingbar(runif(timebar))
-                         
-                         #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
-                        saveAcc[time] <- round(cor(Predict, pheno, use="na.or.complete"),digits=3) # normal
-						saveMSEP[time] <- round(sqrt(((Predict-pheno)^2)/length(pheno)),3)
-                       # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
-						#saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=2) 
-                         message("")
-                         message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
-                savePred <- savePred + Predict
-				savePredSD <-savePredSD + PredSD
-				saveCD <- saveCD+CD
-				#savePpred=Predict
-				#savePredSD=PredSD
-				#saveCD=CD
-
-				rm(Predict,PredSD,CD)
-				} 
-  
-  
-  
-				if(pop.reduct.method=="RANDOM")  
-				{              
-                    genopop <- RPS(geno,rps) # Random Pop Size #ATTENTION: car le size de genopop est different que rps!! POURQUOI
-                    new.geno.pop.size <- dim(genopop)
-                    phenopop <- pheno[rownames(genopop)]
-                    nObs <- rps
-                           
-                    message("Random Pop Size applied. New genotypic data dimension:")
-                    print(new.geno.pop.size)
-                    message("")
-						   
-					 nObs <- length(pheno)
-                             
-				
-						Predict<-rep(NA,nObs)
-						CD<-rep(NA,nObs)
-						 PredSD <-rep(NA,nObs)
-                         
-						 names(PredSD)=names(pheno)
-						 names(CD)=names(pheno)
-						 names(Predict)=names(pheno)
-                         
-                         folds <- sample(rep(1:nFolds, length.out=nObs))
-                         
-                         for (fold in 1:nFolds)
-											{
-                                                
-                                                genoTrain <- RPS(geno,rps)
-												phenoTrain=pheno[rownames(genoTrain)]
-                                                phenoReal <- pheno[!names(pheno)%in%names(phenoTrain)] 
-                                                genoPred <- geno[names(phenoReal),]
-								if (FIXED!="NULL")
-								{
-								FixedPred <- FIXED[folds == fold,]
-								FixedTrain <- FIXED[folds!=fold,]
-								pred <- predictor(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
-								}
-
-												
-                                                
-                                                #pred <- predictor(phenoTrain,phenoReal, genoTrain, genoPred)
-												else {pred <- predictor(phenoTrain, genoTrain, FixedTrain="NULL", genoPred, FixedPred="NULL")}
-												#else {pred <- predictor(phenoTrain, genoTrain, genoPred)}
-												#Return cbind(GPRED,CD)
-                                                #pred <- predictor_rrBLUP(phenoTrain,phenoReal, genoTrain, genoPred); 
-												#Return cbind(GPRED,CD)
-                                                
-                                               
-                                                Predict[rownames(pred)] <- pred[,1]
-												
-												PredSD[rownames(pred)] <-pred[,2]
-                                                CD[rownames(pred)] <- pred[,3]
-                                                
-                                                valid <- pheno[rownames(pred)] # pheno valid them vao 21/11/14 valid = phenoReal
-                                                # Correlation entre valid/pred 
-                                                
-                                               # accu <- round(cor(pred[,1],phenoReal),digits=2);
-                                               # ACCU[fold] <- round(cor(pred,valid),digits=2)# 04/05/2015 VG TRAN
-                                               corr <- cor(pred[,1],valid)
-                                               ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
-  
-                                                message("")
-                                               # message(c("cv correlation for fold ",fold," is: ",accu));
-                                                message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
-
-                               
-											}  # fold loop
-                         message("")
-                         class_predict[[time]] <- Predict
-						 class_predSD[[time]] <- PredSD
-						 class_CD[[time]] <-CD
-                         timebar <- time*100/nTimes
-                         waitingbar(runif(timebar))
-                         
-                         #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
-                        saveAcc[time] <- round(cor(Predict, pheno,use="na.or.complete"),digits=3) # normal
-						saveMSEP[time] <- round(sqrt(((Predict-pheno)^2)/length(pheno)),3)
-                         #saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
-						#saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=2) 
-                         message("")
-                         message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
-                         savePred <- savePred + Predict
-						 savePredSD <- savePredSD + PredSD
-						 saveCD <- saveCD+CD	   
-						   
-				rm(Predict,PredSD,CD)	   
-						   
-						   
-                }   #//////End of Random Pop Size script.
-				
-				
-				if(pop.reduct.method=="OPTI")  
-				{              
-                    genopop <- optiTRAIN(geno,rps,Nopti=3000)$genoOptimiz # optimum Pop Size #ATTENTION: car le size de genopop est different que rps!! POURQUOI
-                    new.geno.pop.size <- c(rps,ncol(geno))
-                    phenopop <- pheno[rownames(genopop)]
-                    nObs <- rps
-                           
-                    message("CDmean optimisation applied. New genotypic data dimension:")
-                    print(new.geno.pop.size)
-                    message("")
-						   
-					 nObs <- length(pheno)
-                    
-                             
-					#Predict <- rep(0,length(pheno))
-					     Predict<-rep(NA,nObs)
-						 CD<-rep(NA,nObs)
-						 PredSD <-rep(NA,nObs)
-                         #cvPred <- rep(NA, nObs)
-						 #cvPredSD <-rep(NA,nObs)
-                         #cvCD <- rep(NA,nObs)
-						 #names(Pred)=names(pheno)
-						 names(PredSD)=names(pheno)
-						 names(CD)=names(pheno)
-                         names(Predict)=names(pheno)
-                         folds <- sample(rep(1:nFolds, length.out=nObs))
-                         
-                         for (fold in 1:nFolds)
-											{
-                                                
-                                                testOPTI<- optiTRAIN(geno,rps,Nopti=30) 
-												genoTrain <- testOPTI$genoOptimiz 
-												phenoTrain=pheno[rownames(genoTrain)]
-                                                phenoReal <- pheno[!names(pheno)%in%names(phenoTrain)] 
-                                                genoPred <- geno[names(phenoReal),]
-												
-												if (FIXED!="NULL")
-										{
-										FixedPred <- FIXED[rownames(genoTrain),]
-										FixedTrain <- FIXED[!rownames(FIXED)%in%names(phenoTrain),]
-										pred <- predictor(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
-										}
-
-												
-                                                
-                                                #pred <- predictor(phenoTrain,phenoReal, genoTrain, genoPred)
-												else {pred <- predictor(phenoTrain, genoTrain, FixedTrain="NULL", genoPred, FixedPred="NULL")}
-												
-                                                
-                                                #pred <- predictor(phenoTrain, genoTrain, genoPred)
-												
-												#Return cbind(GPRED,CD)
-                                                #pred <- predictor_rrBLUP(phenoTrain,phenoReal, genoTrain, genoPred); 
-												#Return cbind(GPRED,CD)
-                                                
-                                               
-                                                Predict[rownames(pred)] <- pred[,1]
-												PredSD[rownames(pred)] <- pred[,2]
-                                                CD[rownames(pred)] <- pred[,3]
-                                              
-                                                valid <- pheno[rownames(pred)] # pheno valid them vao 21/11/14 valid = phenoReal
-                                                # Correlation entre valid/pred 
-                                                
-                                               # accu <- round(cor(pred[,1],phenoReal),digits=2);
-                                               # ACCU[fold] <- round(cor(pred,valid),digits=2)# 04/05/2015 VG TRAN
-                                               #corr <- cor(pred,valid)
-											   corr <-cor(pred[,1],valid)
-                                               ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
-  
-                                                message("")
-                                               # message(c("cv correlation for fold ",fold," is: ",accu));
-                                                message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
-
-                                               
-												
-											}
-                         message("")
-                         class_predict[[time]] <- Predict
-						 class_predSD[[time]] <-PredSD
-						 class_CD[[time]] <-CD
-                         timebar <- time*100/nTimes
-                         waitingbar(runif(timebar))
-						 
-									 
-						 
-                         
-                         #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
-                         saveAcc[time] <- round(cor(cvPred, pheno,use="pairwise.complete.obs"),digits=3) # normal
-					
-                       # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
-						#saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=3)
-						#saveAcc[time] <- round(cor(Predict, pheno[names(Predict)],use="na.or.complete"),digits=3)
-						saveMSEP[time] <- round(sqrt(sum((Predict-pheno)^2)/length(pheno)),3)
-                         message("")
-                         message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
-                         savePred <- savePred + Predict
-						 savePredSD <- savePredSD + PredSD
-						 saveCD <- saveCD+CD	  
-				rm(Predict,PredSD,CD)    
-						   
-                }   #//////End of OPTI script.
-				
-	  }# end nTimes
-	  
   SD <- round(sd(saveAcc),digits=4) # Standard Deviation of CV
   SDMSEP=round(sd(saveMSEP),4)      # Standard Deviation of sqrMSEP
   
@@ -1911,7 +1922,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
   # print(bv_predict_all)
   bv_predict_mean = apply(bv_predict_all,1,meanNA)
   bv_predSD_mean=apply(bv_predSD_all,1,meanNA)
- # bv_predict_mean=bv_predict_mean+mean(pheno)
+  # bv_predict_mean=bv_predict_mean+mean(pheno)
   bv_CD_mean= apply(bv_CD_all,1,meanNA)
   
   #message("BV predict mean: ");
@@ -1920,7 +1931,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
   #print(bv_predict_all)
   #message("BV Predict mean: "); 
   #print(bv_predict_mean);     
-
+  
   #mae <- abs(bv_predict_mean-pheno)*100/pheno
   bv_table <- round(cbind(pheno,bv_predict_mean,bv_predSD_mean,bv_CD_mean),digits=3)
   #rownames(bv_table) <- names(pheno)
@@ -1933,13 +1944,13 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
   return(class_cv)
   
   #return(class_cv)
- 
+  
 }
 meanNA <- function(x)
-	{ 
-	m=mean(x[!is.na(x)])
-	m
-	}
+{ 
+  m=mean(x[!is.na(x)])
+  m
+}
 
 #//////////////////////////////////////////////////////////////////////////////////
 #  Run_All_Croos_Validation
@@ -1955,7 +1966,7 @@ Run_All_Cross_Validation <- function(pheno,geno_impute,nFolds,nTimes)
   
   #Elastic-Net sequence (alpha not equal to 1 and zero.
   message("Predicting by Elastic-Net ...")
- time.en = system.time(ElasticNet <-runCrossVal(pheno,geno_impute,predict_ElasticNet,nFolds,nTimes))
+  time.en = system.time(ElasticNet <-runCrossVal(pheno,geno_impute,predict_ElasticNet,nFolds,nTimes))
   L = length(ElasticNet)
   message("Predict by Elastic-Net...ended.")
   EN_Results <- c(mean(ElasticNet[1:L-1],na.rm=T),ElasticNet[L],round(time.en[3]/60,digits=3))
@@ -2126,10 +2137,10 @@ Run_All_Cross_Validation <- function(pheno,geno_impute,nFolds,nTimes)
   #names(Table) <- c("Elastic-Net","SVM","RR","LASSO","rrBLUP","RKHS","RF") 
   
   Table <- cbind(BA_Results,BB_Results, BC_Results, BL_Results, BRR_Results, EN_Results,SVM_Results,BRNN_Results, RR_Results,LASSO_Results,GBLUP_Results,
-  EGBLUP_Results,RKHS_Results,MKRKHS_Results,RF_Results)
+                 EGBLUP_Results,RKHS_Results,MKRKHS_Results,RF_Results)
   rownames(Table) <- c("Mean Correlation","Standard Deviation","Time taken (mins)")
   colnames(Table) <- c("BayesA","BayesB","BayesC","BayesLASSO", "BayesRR", "Elastic-Net","SVM","BRNN","RR","LASSO","GBLUP","EGBLUP",
-  "RKHS","MKRKHS","RF")
+                       "RKHS","MKRKHS","RF")
   Table = t(Table) # chuyen vi
   
   return(Table)
@@ -2156,15 +2167,15 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
   #(c)2015 V.G.TRAN & G.CHARMET
   #BayesA
- #library(BGLR)
-     if (!requireNamespace("BGLR", quietly = TRUE)) 
-	{
+  #library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) 
+  {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
-	}
+         call. = FALSE)
+  }
   
-
- 
+  
+  
   GENO = rbind(genoTrain,genoPred)
   y<- as.vector(GENO[,1])
   names(y)<- rownames(GENO)
@@ -2181,48 +2192,48 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL;
   R2=0.5;
   ETA<-list(list(X=GENO,model='BayesA'))
-
+  
   if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesA'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
- 
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesA'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
+    
   }
   
   
   else
   {
-  options(warn=-1)
-  #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
-  MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
-  #MODEL1=BGLR(y=yNa,ETA=NULL,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-  #MODEL2=BGLR(y=y,ETA=NULL,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    options(warn=-1)
+    #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
+    MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
+    #MODEL1=BGLR(y=yNa,ETA=NULL,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    #MODEL2=BGLR(y=y,ETA=NULL,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
   
   
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
   #CD = sqrt(1-fm1$SD.u^2/fm1$varU)
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-      return(GPRED)
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  return(GPRED)
   
 }
 
@@ -2231,22 +2242,22 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 #////////////////////////////////////////////////////////////////////////////
 # predict_BB uses BGLR library
 #//////////////////////////////////////////////////////////////////////////////////////
-  predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
-  {
+predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
+{
   
-library(BGLR)
-    if (!requireNamespace("BGLR", quietly = TRUE)) {
+  library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
   
-
+  
   
   GENO = rbind(genoTrain,genoPred)
   y <- as.vector(GENO[,1])
   names(y) <- rownames(GENO)
   y[names(phenoTrain)] <- phenoTrain
-
+  
   #whichNa<-sample(1:length(y),size=72,replace=FALSE)
   yNa <-y
   yNa[rownames(genoPred)]<-NA
@@ -2259,42 +2270,42 @@ library(BGLR)
   weights=NULL
   R2=0.5
   
-    if(FixedTrain!="NULL")
+  if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesB'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
- 
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesB'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
+    
   }
   
   else{
-  ETA<-list(list(X=GENO,model='BayesB',probIn=0.05))
-  options(warn=-1)
-  # MODEL=do.call(BGLR,args=c(y=yNa,args.BGLR))
-  MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	}
-
+    ETA<-list(list(X=GENO,model='BayesB',probIn=0.05))
+    options(warn=-1)
+    # MODEL=do.call(BGLR,args=c(y=yNa,args.BGLR))
+    MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+  }
+  
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
   #CD = sqrt(1-fm1$SD.u^2/fm1$varU)
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-      return(GPRED)
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  return(GPRED)
   
 }
 
@@ -2304,16 +2315,16 @@ library(BGLR)
 
 
 predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
-
+  
 {
   #(c)2015 V.G.TRAN & G.CHARMET
   #BayesC for Genomic Selection
-#  library(BGLR)
-     if (!requireNamespace("BGLR", quietly = TRUE)) {
+  #  library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
- 
+  
   #phenoTrain
   #phenoReal
   #genoTrain
@@ -2328,7 +2339,7 @@ predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   y <- as.vector(GENO[,1])
   names(y) <- rownames(GENO)
   y[names(phenoTrain)] <- phenoTrain
-
+  
   #whichNa<-sample(1:length(y),size=72,replace=FALSE)
   yNa <- y
   yNa[rownames(genoPred)] <- NA
@@ -2343,40 +2354,40 @@ predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   
   if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesC'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesC'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
   }
   
   else
   {
-  ETA<-list(list(X=GENO,model='BayesC'))
-  options(warn=-1)
-  #MODEL=do.call(BGLR,args=c(y=yNa,arg.BGLR))
-  MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	}
-
+    ETA<-list(list(X=GENO,model='BayesC'))
+    options(warn=-1)
+    #MODEL=do.call(BGLR,args=c(y=yNa,arg.BGLR))
+    MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+  }
+  
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
   #CD = sqrt(1-fm1$SD.u^2/fm1$varU)
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
   
 }
@@ -2390,20 +2401,20 @@ predict_BL <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
   #(c)2015 V.G.TRAN & G.CHARMET
   #BayesA
- #library(BGLR)
-     if (!requireNamespace("BGLR", quietly = TRUE)) 
-	{
+  #library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) 
+  {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
-	}
- 
-
-
+         call. = FALSE)
+  }
+  
+  
+  
   GENO = rbind(genoTrain,genoPred)
   y<- as.vector(GENO[,1])
   names(y)<- rownames(GENO)
   y[names(phenoTrain)]<- phenoTrain
-
+  
   #whichNa<-sample(1:length(y),size=72,replace=FALSE)
   yNa<-y
   yNa[rownames(genoPred)]<-NA
@@ -2415,43 +2426,43 @@ predict_BL <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL;
   R2=0.5;
   
-	if(FixedTrain!="NULL")
+  if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BL'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BL'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
   }
   
   else{
-  ETA<-list(list(X=GENO,model='BL'))
-
-  options(warn=-1)
-  #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
-  MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	}
-
+    ETA<-list(list(X=GENO,model='BL'))
+    
+    options(warn=-1)
+    #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
+    MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+  }
+  
   
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
   #CD = sqrt(1-fm1$SD.u^2/fm1$varU)
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
   
 }
@@ -2464,19 +2475,19 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
   #(c)2015 V.G.TRAN & G.CHARMET
   #BayesA
-# library(BGLR)
-     if (!requireNamespace("BGLR", quietly = TRUE)) 
-	{
+  # library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) 
+  {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
-	}
-
-
+         call. = FALSE)
+  }
+  
+  
   GENO = rbind(genoTrain,genoPred)
   y<- as.vector(GENO[,1])
   names(y)<- rownames(GENO)
   y[names(phenoTrain)]<- phenoTrain
-
+  
   #whichNa<-sample(1:length(y),size=72,replace=FALSE)
   yNa<-y
   yNa[rownames(genoPred)]<-NA
@@ -2491,35 +2502,35 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL;
   R2=0.5;
   
-     if(FixedTrain!="NULL")
+  if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BRR'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BRR'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
   }
   
   else
   {
-  ETA<-list(list(X=GENO,model='BRR'))
-
-  options(warn=-1)
-  #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
-  MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	}
-	
- 
+    ETA<-list(list(X=GENO,model='BRR'))
+    
+    options(warn=-1)
+    #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
+    MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+  }
+  
+  
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
@@ -2527,9 +2538,9 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   CD=sqrt(1-(SDU^2/VARU))
   CD=1-(SDU^2/VARU)
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
   
 }
@@ -2540,22 +2551,22 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 
 
 # predict_ElasticNet <- function(phenoTrain, genoTrain, genoPred,arg.cv.glmnet=list(family="gaussian",alpha=0.5)){
- predict_ElasticNet <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
- {
-
- #(c)2013 V.G. TRAN
-     if (!requireNamespace("glmnet", quietly = TRUE)) {
+predict_ElasticNet <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
+{
+  
+  #(c)2013 V.G. TRAN
+  if (!requireNamespace("glmnet", quietly = TRUE)) {
     stop("glmnet needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
- 
-#  library(glmnet)  # LASSO & Elastic-Net generalized linear models
+  
+  #  library(glmnet)  # LASSO & Elastic-Net generalized linear models
   
   #do cross-validation to get the optimal value of lambda:
   
- # cv.fit <- do.call(glmnet::cv.glmnet,args=c(genoTrain,phenoTrain,arg.cv.glmnet)) #ElasticNet penalty with top results
+  # cv.fit <- do.call(glmnet::cv.glmnet,args=c(genoTrain,phenoTrain,arg.cv.glmnet)) #ElasticNet penalty with top results
   cv.fit <- cv.glmnet(genoTrain,phenoTrain,family="gaussian",alpha=0.5) #ElasticNet penalty with top results
-
+  
   #alpha=1: lasso penalty, alpha=0: ridge penalty
   lambda_min <- cv.fit$lambda.min # making the best prediction
   #lambda.1se <- cv.fit$lambda.1se
@@ -2576,22 +2587,22 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 #//////////////////////////////////////////////////////////////////////////////////////
 
 
- predict_BRNN<- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
- {
-
- #(c)2013 V.G. TRAN
-     if (!requireNamespace("brnn", quietly = TRUE)) {
+predict_BRNN<- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
+{
+  
+  #(c)2013 V.G. TRAN
+  if (!requireNamespace("brnn", quietly = TRUE)) {
     stop("brnn needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
- 
-#  library(glmnet)  # LASSO & Elastic-Net generalized linear models
+  library(brnn)
+  #  library(glmnet)  # LASSO & Elastic-Net generalized linear models
   
   #do cross-validation to get the optimal value of lambda:
   
- # cv.fit <- do.call(glmnet::cv.glmnet,args=c(genoTrain,phenoTrain,arg.cv.glmnet)) #ElasticNet penalty with top results
+  # cv.fit <- do.call(glmnet::cv.glmnet,args=c(genoTrain,phenoTrain,arg.cv.glmnet)) #ElasticNet penalty with top results
   cv.fit <- brnn(genoTrain,phenoTrain,neurons=2,epochs=10, verbose=T) # neural networks with 2 neurons and 50 iterations
-
+  
   
   gpred <- predict(cv.fit,newdata=genoPred)
   #GPRED <- round(gpred,digits=3)
@@ -2611,17 +2622,17 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 
 
 predict_GBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred) 
-# NB based on kin.blu (rrBLUP), faster than bayesian, independant from marker number
+  # NB based on kin.blu (rrBLUP), faster than bayesian, independant from marker number
 {
- 
+  
   
   #BLUP #(c)2015 V.G. TRAN & G. CHARMET
-#  library(BGLR)
-#       if (!requireNamespace("rrBLUP", quietly = TRUE)) {
- #   stop("rrBLUP needed for this function to work. Please install it.",
+  #  library(BGLR)
+  #       if (!requireNamespace("rrBLUP", quietly = TRUE)) {
+  #   stop("rrBLUP needed for this function to work. Please install it.",
   #    call. = FALSE)
-#  }
- 
+  #  }
+  
   
   GENO <- rbind(genoTrain,genoPred)
   
@@ -2635,64 +2646,64 @@ predict_GBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred
   
   if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(MNI(FIX))
-  #ixed=colnames(FIX)
-  dataF=data.frame(genoID=names(y),yield=yNa,FIX)
-  Fixed=colnames(dataF[,-c(1,2)])
-
-  MODEL=kin.blup(dataF,geno="genoID",pheno="yield", GAUSS=FALSE,K=A, fixed=Fixed,
-         PEV=TRUE,n.core=1,theta.seq=NULL)
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(MNI(FIX))
+    #ixed=colnames(FIX)
+    dataF=data.frame(genoID=names(y),yield=yNa,FIX)
+    Fixed=colnames(dataF[,-c(1,2)])
+    
+    MODEL=kin.blup(dataF,geno="genoID",pheno="yield", GAUSS=FALSE,K=A, fixed=Fixed,
+                   PEV=TRUE,n.core=1,theta.seq=NULL)
   }
   else
   {
-  
-  dataF=data.frame(genoID=names(y),yield=yNa)
- #Fixed=colnames(dataF[,-c(1,2)])
-
-  MODEL=kin.blup(data=dataF,geno="genoID",pheno="yield", GAUSS=FALSE, K=A, 
-         PEV=TRUE,n.core=1,theta.seq=NULL)
+    
+    dataF=data.frame(genoID=names(y),yield=yNa)
+    #Fixed=colnames(dataF[,-c(1,2)])
+    
+    MODEL=kin.blup(data=dataF,geno="genoID",pheno="yield", GAUSS=FALSE, K=A, 
+                   PEV=TRUE,n.core=1,theta.seq=NULL)
   }
   
-
-
+  
+  
   options(warn=-1)
- # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
-
-
+  # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
+  
+  
   gpred = MODEL$pred
   gpredSD=sqrt(MODEL$PEV)
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=MODEL$Vg   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$PEV
   
- 
+  
+  VARU=MODEL$Vg   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$PEV
+  
+  
   #CD: coefficient of determination:
   
-
+  
   CD=sqrt(1-(SDU/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
-    
+  
 }
 
 predict_GBLUPB <- function(phenoTrain, genoTrain, genoPred,arg.kinship.BLUP=list(K.method="GAUSS")) 
-# OLD function based on BGLR: too long with bayesian solution
+  # OLD function based on BGLR: too long with bayesian solution
 {
- 
+  
   
   #BLUP #(c)2015 V.G. TRAN & G. CHARMET
-#  library(BGLR)
-       if (!requireNamespace("BGLR", quietly = TRUE)) {
+  #  library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
- 
+  
   
   GENO <- rbind(genoTrain,genoPred)
   y <- as.vector(GENO[,1])
@@ -2700,40 +2711,40 @@ predict_GBLUPB <- function(phenoTrain, genoTrain, genoPred,arg.kinship.BLUP=list
   y[names(phenoTrain)] <- phenoTrain
   yNa <- y
   yNa[rownames(genoPred)] <- NA
-
-   A <-A.mat(GENO) 
+  
+  A <-A.mat(GENO) 
   
   #2# Computing D and then K
   
   
   #3# Kernel Averaging using BGLR
- # ETA <- list(list(K=exp(-h[1]*D),model='RKHS'),
+  # ETA <- list(list(K=exp(-h[1]*D),model='RKHS'),
   #          list(K=exp(-h[2]*D),model='RKHS'),
-   #         list(K=exp(-h[3]*D),model='RKHS'))
+  #         list(K=exp(-h[3]*D),model='RKHS'))
   ETA= list(list(K=A, model='RKHS'))
- # options(warn=-1)
- # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
- MODEL <- BGLR(y=yNa,ETA=ETA,nIter=5000, burnIn=1000)
-
+  # options(warn=-1)
+  # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
+  MODEL <- BGLR(y=yNa,ETA=ETA,nIter=5000, burnIn=1000)
+  
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
- 
-
+  
+  
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
-    
+  
 }
 
 
@@ -2750,12 +2761,12 @@ predict_MKRKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
 {
   #Multi-Kernel RKHS
   #(c)2015 V.G. TRAN & G. CHARMET
-#  library(BGLR)
-       if (!requireNamespace("BGLR", quietly = TRUE)) {
+  #  library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
- 
+  
   
   GENO <- rbind(genoTrain,genoPred)
   y <- as.vector(GENO[,1])
@@ -2763,8 +2774,8 @@ predict_MKRKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   y[names(phenoTrain)] <- phenoTrain
   yNa <- y
   yNa[rownames(genoPred)] <- NA
-
-
+  
+  
   #A = A.mat(GENO);
   X = GENO
   p = ncol(X)
@@ -2772,39 +2783,39 @@ predict_MKRKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   #2# Computing D and then K
   X <- scale(X,center=TRUE,scale=TRUE)
   D <- (as.matrix(dist(X,method='euclidean'))^2)/p
- # h<-0.5*c(1/5,1,5)
+  # h<-0.5*c(1/5,1,5)
   
   h <- sqrt(c(0.2,0.5,0.8))
   
   #3# Kernel Averaging using BGLR
   ETA <- list(list(K=exp(-h[1]*D),model='RKHS'),
-            list(K=exp(-h[2]*D),model='RKHS'),
-            list(K=exp(-h[3]*D),model='RKHS'))
+              list(K=exp(-h[2]*D),model='RKHS'),
+              list(K=exp(-h[3]*D),model='RKHS'))
   
   options(warn=-1)
- # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
- MODEL <- BGLR(y=yNa,ETA=ETA,nIter=8000, burnIn=2000)
-
+  # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
+  MODEL <- BGLR(y=yNa,ETA=ETA,nIter=8000, burnIn=2000)
+  
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
   #CD = sqrt(1-fm1$SD.u^2/fm1$varU)
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
-    
+  
 }
 
 #////////////////////////////////////////////////////////////////////////////
@@ -2816,12 +2827,12 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
   # RKHS
   #(c)2015 V.G. TRAN & G. CHARMET
-#  library(BGLR)
-       if (!requireNamespace("BGLR", quietly = TRUE)) {
+  #  library(BGLR)
+  if (!requireNamespace("BGLR", quietly = TRUE)) {
     stop("BGLR needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
- 
+  
   
   GENO <- rbind(genoTrain,genoPred)
   y <- as.vector(GENO[,1])
@@ -2829,7 +2840,7 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   y[names(phenoTrain)] <- phenoTrain
   yNa <- y
   yNa[rownames(genoPred)] <- NA
-
+  
   X = GENO
   p = ncol(X)
   
@@ -2839,43 +2850,43 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   h <- 0.5
   K=exp(-h*D)
   
-    if(FixedTrain!="NULL")
+  if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(K=K, model='RKHS'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=5000, burnIn=1000)
-	fm=MODEL
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(K=K, model='RKHS'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=5000, burnIn=1000)
+    fm=MODEL
   }
   else
   {
-
-  ETA= list(list(K=K, model='RKHS'))
-  options(warn=-1)
- # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
- MODEL <- BGLR(y=yNa,ETA=ETA,nIter=5000, burnIn=1000)
-	}
+    
+    ETA= list(list(K=K, model='RKHS'))
+    options(warn=-1)
+    # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
+    MODEL <- BGLR(y=yNa,ETA=ETA,nIter=5000, burnIn=1000)
+  }
   gpred = MODEL$yHat
   gpredSD=MODEL$SD.yHat
   GPRED=cbind(gpred,gpredSD)
-	
-
-   VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
-   SDU=MODEL$SD.yHat
   
- 
+  
+  VARU=var(gpred)   # See: BGLR Genomics.cimmyt.org/BGLR-extdoc.pdf
+  SDU=MODEL$SD.yHat
+  
+  
   #CD: coefficient of determination:
   
   #CD = round(sqrt(1-fm$ETA1[[1]]$SD.u^2/fm$ETA1[[1]]$varU),digits=2) ; #Accuracy by coefficient of determination
   #CD = sqrt(1-fm1$SD.u^2/fm1$varU)
   CD=sqrt(1-(SDU^2/VARU))
   GPRED=cbind(GPRED,CD)
-	GPRED=round(GPRED,digits=3)
-	GPRED=GPRED[rownames(genoPred),]
-    
+  GPRED=round(GPRED,digits=3)
+  GPRED=GPRED[rownames(genoPred),]
+  
   return(GPRED)
-    
+  
 }
 
 #////////////////////////////////////////////////////////////////////////////
@@ -2886,12 +2897,12 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 predict_RF <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred) 
 {
   #(c)2013 V.G.TRAN
-        if (!requireNamespace("randomForest", quietly = TRUE)) {
+  if (!requireNamespace("randomForest", quietly = TRUE)) {
     stop("randomForest needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }
-
-#  library(randomForest)
+  
+  #  library(randomForest)
   #return(randomForest(genoTrain, phenoTrain, xtest=genoPred)$test$predicted)
   #gpred <- do.call(randomForest::randomForest,args=c(genoTrain, phenoTrain, xtest=genoPred,arg.randomForest))$test$predicted
   gpred = randomForest(genoTrain, phenoTrain, xtest=genoPred)$test$predicted;
@@ -2915,13 +2926,13 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   #(c)2015 G.CHARMET & V.G. TRAN
   #EG-BLUP for Genomic Selection
   #library(BGLR)
- 
+  
   GENO = rbind(genoTrain,genoPred)
   A_GENO <- AM(GENO)
   y<- as.vector(GENO[,1])
   names(y)<- rownames(GENO)
   y[names(phenoTrain)]<- phenoTrain
-
+  
   #whichNa<-sample(1:length(y),size=72,replace=FALSE)
   yNa<-y
   yNa[rownames(genoPred)]<-NA
@@ -2934,33 +2945,33 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   weights=NULL;
   R2=0.5;
   
-   if(FixedTrain!="NULL")
+  if(FixedTrain!="NULL")
   {
-  FIX <- rbind(FixedTrain,FixedPred)
-  FIX=round(FIX)
-  ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BRR'),list(K=A_GENO*A_GENO,model='RKHS'))
-  options(warn=-1)
-	MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
-	fm=MODEL
+    FIX <- rbind(FixedTrain,FixedPred)
+    FIX=round(FIX)
+    ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BRR'),list(K=A_GENO*A_GENO,model='RKHS'))
+    options(warn=-1)
+    MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    fm=MODEL
   }
   
   
   else{
-  ETA<-list(list(X=GENO,model='BRR'),list(K=A_GENO*A_GENO,model='RKHS'))
-  options(warn=-1);
-  MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
+    ETA<-list(list(X=GENO,model='BRR'),list(K=A_GENO*A_GENO,model='RKHS'))
+    options(warn=-1);
+    MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
   
   gpred = MODEL$yHat
   #gpred=predict(MODEL)
   gpredSD=MODEL$SD.yHat
-	VARU=var(gpred)
-	SDU=gpredSD
-	CD = round(sqrt(1-(SDU^2/VARU)),digits=3) ; #Accuracy by coefficient of determination
-    GPRED=cbind(gpred,gpredSD,CD)
-	GPRED=GPRED[rownames(genoPred),]
-
-
+  VARU=var(gpred)
+  SDU=gpredSD
+  CD = round(sqrt(1-(SDU^2/VARU)),digits=3) ; #Accuracy by coefficient of determination
+  GPRED=cbind(gpred,gpredSD,CD)
+  GPRED=GPRED[rownames(genoPred),]
+  
+  
   return(GPRED)
   
 }
@@ -2972,22 +2983,22 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
 
 predict_RR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred) 
 {
-
+  
   #(c)2013 V.G.TRAN
-   if (!requireNamespace("glmnet", quietly = TRUE)) {
+  if (!requireNamespace("glmnet", quietly = TRUE)) {
     stop("glmnet needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }  
- 
-#  library(glmnet) 
+  
+  #  library(glmnet) 
   
   #do cross-validation to get the optimal value of lambda:
   # cv.fit <- do.call(glmnet::cv.glmnet,args=c(genoTrain,phenoTrain,arg.cv.glmnet)) #Ridge penalty with top results
   cv.fit <- cv.glmnet(genoTrain,phenoTrain,alpha=0) #Ridge penalty with top results
-
+  
   lambda_min <- cv.fit$lambda.min # making the best prediction
   #return(predict(cv.fit,newx=genoPred,s=c(lambda_min)))
-
+  
   gpred <- predict(cv.fit,newx=genoPred,s=c(lambda_min))
   gpredSD=gpred
   gpredSD=NA
@@ -2997,7 +3008,7 @@ predict_RR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   GPRED=round(GPRED,digits=3)
   return(GPRED)
   
-
+  
 }
 
 #////////////////////////////////////////////////////////////////////////////
@@ -3006,17 +3017,17 @@ predict_RR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 
 predict_Lasso <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
-#(c)2013 V.G.TRAN
-
-library(glmnet) 
-
-#do cross-validation to get the optimal value of lambda:
-
-cv.fit <- cv.glmnet(genoTrain,phenoTrain,family="gaussian",alpha=1) #Lasso penalty with top results
-
-lambda_min <- cv.fit$lambda.min # making the best prediction
-
-gpred = predict(cv.fit,newx=genoPred,s=c(lambda_min))
+  #(c)2013 V.G.TRAN
+  
+  library(glmnet) 
+  
+  #do cross-validation to get the optimal value of lambda:
+  
+  cv.fit <- cv.glmnet(genoTrain,phenoTrain,family="gaussian",alpha=1) #Lasso penalty with top results
+  
+  lambda_min <- cv.fit$lambda.min # making the best prediction
+  
+  gpred = predict(cv.fit,newx=genoPred,s=c(lambda_min))
   gpredSD=gpred
   gpredSD=NA
   CD <- gpred
@@ -3033,16 +3044,16 @@ gpred = predict(cv.fit,newx=genoPred,s=c(lambda_min))
 
 predict_SVM <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred) 
 {
-
+  
   #(c)2013 vangiang.tran@gmail.com
   if (!requireNamespace("e1071", quietly = TRUE)) {
     stop("e1071 needed for this function to work. Please install it.",
-      call. = FALSE)
+         call. = FALSE)
   }  
-
-#  library(e1071)
+  
+  #  library(e1071)
   #model <- do.call(e1071::svm,args=c(genoTrain,phenoTrain,arg.svm))
- # model <- svm(genoTrain,phenoTrain,method="C-classification",kernel="radial",cost=10,gamma=0.001)
+  # model <- svm(genoTrain,phenoTrain,method="C-classification",kernel="radial",cost=10,gamma=0.001)
   model <- svm(genoTrain,phenoTrain,method="nu-regression",kernel="radial",cost=10,gamma=0.001)
   gpred <- predict(model,genoPred)
   gpredSD=gpred
@@ -3086,7 +3097,7 @@ transfer <- function(data,time.cal,ncol_geno_shrink) {
   message("")
   message("Processing...ended! Results in: object$summary, object$cv, object$sd, object$bv")
   return(Results)
-  }
+}
 
 #waitingbar <- function(x)
 
@@ -3094,10 +3105,10 @@ transfer <- function(data,time.cal,ncol_geno_shrink) {
 
 waitingbar <- function(x = sort(runif(20)), ...) {
   #(c)2013 V.G. TRAN
-
+  
   pb <- txtProgressBar(min=0,max=1,initial=0,char="*",width=40,style=3)
   for(i in c(0, x, 1)) {Sys.sleep(0.1)
-  setTxtProgressBar(pb, i)}
+    setTxtProgressBar(pb, i)}
   Sys.sleep(0.1)
   close(pb)
 }
@@ -3114,7 +3125,7 @@ waitingbar <- function(x = sort(runif(20)), ...) {
 qtlSIM <- function(geno,NQTL=100,h2=0.3) {
   #(c)2014 G. CHARMET & V.G. TRAN
   
-
+  
   
   RealizedH2 <- numeric()  # realized trait heritability: to check if it fits expected value
   
@@ -3180,13 +3191,13 @@ bwgs.nacount <- function(geno) {
           if(num_of_binary==6){
             num_na = num_element_total-(num_element[1]+num_element[2]+num_element[3]+num_element[4]+num_element[5]+num_element[6])
           } 
-  
-  else {
-  stop("Error in The genotype data (or non numerized).")
-  } # 
-  }
-  }
-  }
+          
+          else {
+            stop("Error in The genotype data (or non numerized).")
+          } # 
+        }
+      }
+    }
   }
   
   na_pourcentage = num_na*100/num_element_total # in percentage
@@ -3268,8 +3279,8 @@ optiTRAIN=function(geno,NSample=100,Nopti=3000)  #  supress pheno, useless
   #lambda=varE/varG # lambda is needed to estimate the CDmean
   lambda=1
   invA1=solve(matA1)
-   
-      
+  
+  
   ##############################
   # Optimization algorithm
   ##############################
@@ -3287,7 +3298,7 @@ optiTRAIN=function(geno,NSample=100,Nopti=3000)  #  supress pheno, useless
   
   Z=matrix(0,NSample,Nind)
   for (i in 1:length(Sample1)) { Z[i,Sample1[i]]=1 } 
-
+  
   T<-contrasteNonPheno(NotSampled,Nind,NSample)   # T matrice des contrastes
   
   # Calculate of CDmean of the initial set
@@ -3319,9 +3330,9 @@ optiTRAIN=function(geno,NSample=100,Nopti=3000)  #  supress pheno, useless
     CD=diag(matCD)
     
     if (mean(CD)>CDmeanSave ) { Sample1=Sample4 # Accept the new Calibration set if CDmean is increased, reject otherwise.
-                                CDmeanSave=mean(CD)  
-                                cpt=0 } else { cpt=cpt+1 
-                                }
+    CDmeanSave=mean(CD)  
+    cpt=0 } else { cpt=cpt+1 
+    }
     CDmeanMax1[cpt2-1]=CDmeanSave
   }  #Fin du while
   
@@ -3330,9 +3341,9 @@ optiTRAIN=function(geno,NSample=100,Nopti=3000)  #  supress pheno, useless
   sortOptimiz=sampleOptimiz[sort.list(sampleOptimiz)]
   genoOptimiz=geno[sortOptimiz,]
   result=list(CDmax=CDmeanSave,sampleOPTI=sampleOptimiz,genoOptimiz=genoOptimiz)
-
-
- }
+  
+  
+}
 # This function creates the matrix of contrast between each of the individual not in the calibration set and the mean of the population
 contrasteNonPheno=function(NotSampled,Nind,NSample)
 {
