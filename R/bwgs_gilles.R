@@ -1,6 +1,3 @@
-
-
-
 #gstools_pipeline - derived from bwgs
 #@ 2017 Sophie Bouchet, Louis Gautier Tran, CHARMET Gilles
 #Version 1.0.0 - Release date: 31/02/2017
@@ -578,8 +575,6 @@ myMean=function(x)
 #'
 #' @return
 #' @export
-#'
-#' @examples
 bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",FIXED_target="NULL",MAXNA=0.2,MAF=0.05,geno.reduct.method="NULL",reduct.size="NULL",r2="NULL",pval="NULL",
                          MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP") 
 {
