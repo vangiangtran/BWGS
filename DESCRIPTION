@@ -3,7 +3,7 @@ Type: Package
 Title: BreedWheat Genomic Selection pipeline
 Version: 0.1.0
 Author: Gilles CHARMET, Louis Gautier TRAN
-Maintainer: Gilles Charmet <gilles.charmet@inra.fr>
+Maintainer: Bangyou Zheng <bangyou.zheng@csiro.au>, Gilles Charmet <gilles.charmet@inra.fr>
 Description: Package for Breed Wheat Genomic Selection pipeline.
 License: GPL(>=2)
 Encoding: UTF-8
