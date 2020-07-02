@@ -24,41 +24,112 @@ bwgs.cv(
 )
 }
 \arguments{
-\item{geno}{A matrix. Genotypes coded with (-1 0 1). Individuals in rows. Markers in column.}
+\item{geno}{Matrix (n x m) of genotypes for the training population: n lines with m markers. Genotypes should be coded {-1, 0, 1}. Missing data are allowed and coded as NA.}
 
-\item{pheno}{A matrix. One column per character.}
+\item{pheno}{Vector (n x 1) of "phenotypes", i.e. observations or pre-processed, corrected values. This vector should have no missing values, otherwise missing values (NA) will be omitted in both pheno and geno. In a first step, bwgs.cv checks  whether rownames(geno) match with  names(pheno). If not the case,  the common elements (intersect)  are selected in both geno and  pheno for further analyses. If a  MAP file is provided, the  selected set of markers are also  sorted out in MAP.}
 
 \item{FIXED}{A matrix of fixed effect, to be used with some methods such as those included in BGLR, MUST have same rownames as geno and coded(-1 0 1)}
 
-\item{MAXNA}{maximum^proportion of missing data. Markers with NA > this throshold are skipped out}
+\item{MAXNA}{The maximum proportion of missing  value which is admitted for filtering marker columns in geno. Default value is 0.2}
 
-\item{MAF}{Minor allele frequency for Data cleaning. Markers with MAF < this thersholds are skipped out. Can generate errors when unadapted}
+\item{MAF}{The minimum allele frequency for filtering marker colums in geno;default value is 0.05}
 
-\item{sample.pop.size}{A number < nrow(geno)}
+\item{pop.reduct.method}{Method for reducing the size of the training population. Can be used for teaching purposes, no real interest in real life if the entire population is already genotyped and phenotyped. 
+Default value is NULL (all training set used).
+Proposed methods are:
+\itemize{
+   \item{RANDOM: a subset of sample.pop.size is randomly selected for training the model, and the unselected part of the population is used for validation. The process is repeated nFolds *  nTimes to have the same number of replicates than with cross-validation.}
+   \item{OPTI: the optimization algorithm based on CDmean (Rincent et al 2012) to select a subset which maximizes average CD (coefficient of determination) in the validation set. Since the process is long and has some  stochastic component, it is  repeated only nTimes.}
+}}
 
-\item{geno.reduct.method}{A character string. It can be "RMR", "ANO", "LD","ANO+LD" or "NULL". See documentation}
+\item{sample.pop.size}{The size of the subset of individuals in the training set (both geno and pheno) selected by pop.reduct.method if not NULL.}
 
-\item{pval}{: the Pvalue threshold to be used for marker selection by independent GWAS.}
+\item{geno.reduct.method}{Allows sampling a subset of markers for speeding up computing time and/or avoid introducing more noise than informative markers. Options are:
+\itemize{
+    \item{RMR: Random sampling (without replacement) of a subset of markers. To be used with the parameter “reduct.marker.size”.}
+    \item{LD (with r2 and MAP): enables “pruning” of markers which are in LD > r2. Only the marker with the least missing values is kept for each pair in LD>r2. To allow faster computation, r2 is estimated chromosome by chromosome, so a MAP file is required with information of marker assignation to chromosomes. The MAP file should contain at least three columns: marker_name, chromosome_name and distance_from_origin (either genetic of physical distance, only used for sorting markers, LD being re-estimated from marker Data).}
+    \item{ANO (with pval): one-way ANOVA are carried out with R function lm on trait “pheno”. Every markers are tested one at a time, and only markers with pvalue<pval are kept for GEBV prediction.}
+    \item{ANO+LD (with pval and r2, MAP is facultative): combines a first step of marker selection with ANO, then a second step of pruning using LD option.}
+}}
 
-\item{r2}{A number. If geno.reduct.method="LD" or geno.reduct.method="ANO+LD" .}
+\item{reduct.marker.size}{Specifies the number of markers for the genotypic reduction using RMR (reduct.size < m).}
 
-\item{MAP}{A matrix with at least one column entitled "chrom" with chromosome number (possibly character)}
+\item{pval}{p value for ANO method, 0 < pval < 1.}
 
-\item{geno.impute.method}{A character string. It can be "MNI" or "EMI".}
+\item{r2}{Coefficient of linkage disequilibrium (LD). Setting 0<r2<1 if the genotypic reduction method is in {LD or ANO+LD }.}
 
-\item{predict.method}{A character string. It can be "GBLUP","EGBLUP","RR","LASSO","EN"n"BRR","BL","BA","BB","BC","RKHS","MKRKFS","RF","SVM","BRNN".}
+\item{MAP}{A matrix with markers in rows and at least ONE columns with colnames= "chrom". Used for computing r2 within linkage groups.}
 
-\item{nFolds}{A number. The number of partitions in the data for cross validation. If 5, 4/5 of the data will be training data and 1/5 validation data.}
+\item{geno.impute.method}{Allow missing marker data imputation using the two methods proposed in function A.mat of package rrBLUP, namely:
+\itemize{
+    \item{MNI: missing data are replaced by the mean allele frequency of the marker (column in geno)}
+    \item{EMI: missing data are replaced using an expectation-maximization methods described in function A.mat (Endelman & Janninck 2012).}
+}
 
-\item{nTimes}{A number. The number of times to randomly repeat cross validation.}
+Default value is NULL.
 
-\item{pop.reduct.method:}{a character string, option to select individuals for further analyses. options are "RANDOM" or "OPTI", based on the optimization algorithm of Rincent et al 2012}
+Note that these imputation methods are only suited when there are a few missing value, typically in marker data from SNP chips of KasPAR. They are NOT suited for imputing marker data from low density to high density designs, and when there are MANY missing Data as typically provided by GBS. More sophisticated software (e.g. Beagles, Browning & Browning 2016) should be used before BWGS.}
 
-\item{reduct.marker.size:}{the number of marker to be sampled or selected.}
+\item{predict.method}{The options for genomic breeding value prediction methods. The available options are:
+\itemize{
+   \item{GBLUP: performs G-BLUP using a marker-based relationship matrix, implemented through BGLR R-library. Equivalent to ridge regression (RR-BLUP) of marker effects.}
+   \item{EGBLUP: performs EG-BLUP, i.e. BLUP using a "squared" relationship matrix to model epistatic 2x2 interactions, as described by Jiang & Reif (2015), using BGLR library}
+   \item{RR: ridge regression, using package glmnet. In theory, strictly equivalent to gblup.}
+   \item{LASSO: Least Absolute Shrinkage and Selection Operator is another penalized regression methods which yield more shrinked estimates than RR. Run by glmnet library.}
+   \item{EN: Elastic Net (Zou and  Hastie, 2005), which is a weighted combination of RR and LASSO, using glmnet library}
+ }
+ Several Bayesian methods, using the BGLR library:
+ \itemize{
+     \item{BRR: Bayesian ridge regression: same as rr-blup, but bayesian resolution. Induces homogeneous shrinkage of all markers effects towards zero with Gaussian distribution (de los Campos et al, 2013)}
+     \item{BL: Bayesian LASSO: uses an exponential prior on marker variances priors, leading to double exponential distribution of marker effects (Park & Casella 2008)}
+     \item{BA: Bayes A uses a scaled-t prior distribution of marker effects. (Meuwissen et al 2001).}
+     \item{BB: Bayes B, uses a mixture of distribution with a point mass at zero and with a slab of non-zero marker effects with a scaled-t distribution (Habier et al 2011).}
+     \item{BC: Bayes C same as Bayes B with a slab with Gaussian distribution.}
+}
+A more detailed description of these methods can be found in Perez & de los Campos 2014 (http://genomics.cimmyt.org/BGLR-extdoc.pdf).
+Three semi-parametric methods:
+\itemize{
+    \item{RKHS: reproductive kernel Hilbert space and multiple kernel MRKHS, using BGLR (Gianola and van Kaam 2008).  Based on genetic distance and a kernel function to regulate the distribution of marker effects. This methods is claimed to be effective for detecting non additive effects.}
+    \item{RF: Random forest regression, using randomForest library (Breiman, 2001, Breiman and  Cutler 2013). This methods uses regression models on tree nodes which are rooted in bootstrapping data. Supposed to be able to capture interactions between markers}
+    \item{SVM: support vector machine, run by e1071 library. For details, see Chang, Chih-Chung and Lin, Chih-Jen: LIBSVM: a library for Support Vector Machines http://www.csie.ntu.edu.tw/~cjlin/libsvm}
+    \item{BRNN: Bayesian Regularization for feed-forward Neural Network, with the R-package BRNN (Gianola et al 2011). To  keep computing time in reasonable limits, the parameters for the brnn function are neurons=2 and epochs = 20.}
+}}
+
+\item{nFolds}{Number of folds for the cross-validation. Smallest value recommended is nFolds = 3.}
+
+\item{nTimes}{Number of independent replicates for the cross-validation. Smallest value recommended is nTimes = 3.}
+}
+\value{
+The class bwgs.cv returns a list containing:
+\itemize{
+    \item{\strong{summary}: Summary of cross-validation, including mean and standard deviation of predictive ability (i.e. correlation between phenotype and GEBV, estimated on the validation fold, then averaged over replicates (nTimes), Time taken by the computation and number of markers}
+    \item{\strong{cv}: Vector of predictive abilities averaged over nFolds, for each of the nTimes replicates}
+    \item{\strong{sd}: Standard deviation of the nTimes predictive abilities}
+    \item{\strong{MSEP}: Square root of the mean-squared error of prediction, averaged over Ntimes}
+    \item{\strong{SDMSEP}: Standard deviation of the Square root of the mean-squared error of prediction, averaged over Ntimes} 
+    \item{\strong{bv_table}: Matrix of dimension n x 4. Columns are: 
+    \itemize{
+        \item{Real BV, i.e. pheno vector}
+        \item{Predict BV: the nx1 vector of GEBVs}
+        \item{gpreSD: Standart deviation of estimated GEBV}
+        \item{CD: coefficient of determination for each GEBV, estimated as sqrt  ((1-stdev(GEBVi))²/σ^2^~g~) Note that gpredSD and CD are only available for methods using the BGLR library, namely GBLUP, EGBLUP, BA,BB,BC,BL,RKHS and MKRKHS. These two columns contain NA for methods RF, RR, LASSO, EN and SVM.}
+   }
+ }
+
+}
 }
 \description{
-Calculates GEBV using different models and cross validation. See Documentation for more details.
+The bwgs.cv function carries out cross-validation using genotypic and
+phenotypic data from a reference population, with options for genotypic
+matrix processing and genomic breeding value estimation.
 }
 \examples{
-bwgs.cv(geno,pheno,random.pop.size="NULL",geno.reduct.method="NULL",reduct.size=NULL,pval=NULL,
+\dontrun{
+data(inra)
+YieldGBLUP <- bwgs.cv(TRAIN47K, YieldBLUE, 
+                       geno.impute.method = "mni",
+                       predict.method = "gblup", 
+                       nFolds = 10, 
+                       nTimes = 1)
+}
 }
