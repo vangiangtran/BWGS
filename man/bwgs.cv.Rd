@@ -112,7 +112,7 @@ The class bwgs.cv returns a list containing:
         \item{Real BV, i.e. pheno vector}
         \item{Predict BV: the nx1 vector of GEBVs}
         \item{gpreSD: Standart deviation of estimated GEBV}
-        \item{CD: coefficient of determination for each GEBV, estimated as sqrt  ((1-stdev(GEBVi))²/σ^2^~g~) Note that gpredSD and CD are only available for methods using the BGLR library, namely GBLUP, EGBLUP, BA,BB,BC,BL,RKHS and MKRKHS. These two columns contain NA for methods RF, RR, LASSO, EN and SVM.}
+        \item{CD: coefficient of determination for each GEBV, estimated as sqrt Note that gpredSD and CD are only available for methods using the BGLR library, namely GBLUP, EGBLUP, BA,BB,BC,BL,RKHS and MKRKHS. These two columns contain NA for methods RF, RR, LASSO, EN and SVM.}
    }
  }
 

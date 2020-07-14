@@ -76,8 +76,6 @@
 #'      MAP = "NULL",
 #'      geno.impute.method = "MNI",
 #'      predict.method = "GBLUP")
-
-
 #' }
 #' @export
 bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",FIXED_target="NULL",MAXNA=0.2,MAF=0.05,geno.reduct.method="NULL",reduct.size="NULL",r2="NULL",pval="NULL",
