@@ -2,7 +2,8 @@
 
 The R package BWGS is developed by Gilles Charmet <gilles.charmet@inra.fr>. This repository is forked from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and modified as a R package.
 
-
+[![Travis-CI Build Status](https://travis-ci.com/byzheng/BWGS.svg?branch=master)](https://travis-ci.com/byzheng/BWGS)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/BWGS)](https://cran.r-project.org/package=BWGS)
 
 ## Installation
 
