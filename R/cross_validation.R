@@ -110,13 +110,6 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   message("2017 BWGS  - Version 1.10.0 Release date: 31/10/2017")
   #message("2015 Gilles Charmet & Louis Gautier Tran)
   
-  # CALL to REQUIRED LIBRARIES 
-  library(rrBLUP)
-  library(BGLR)
-  library(brnn)
-  library(glmnet)
-  library(e1071) 
-  library(randomForest)
   
   #message("")
   start.time <- Sys.time()

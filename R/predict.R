@@ -88,14 +88,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   #message("2015 Gilles Charmet & Louis Gautier Tran)
   
   # upload the necessary libraries
-  
-  library(rrBLUP)
-  library(BGLR)
-  library(glmnet)
-  library(e1071) 
-  library(randomForest)
-  
-  
+
   #message("")
   start.time <- Sys.time()
   message("Start time:")
@@ -344,7 +337,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
       } # END OF LD reduction
       
       MAP2=MAP[colnames(geno_shrinkANO),]
-      time.chrld = system.time(geno_shrink <- CHROMLD(geno_shrinkANO,R2seuil,MAP2))
+      time.chrld = system.time(geno_shrink <- CHROMLD(geno_shrinkANO,R2seuil = r2,MAP2))
       time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
       new.geno.size <- dim(geno_shrink)
       #geno_shrink
@@ -369,7 +362,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
       
       
       MAP2=MAP[colnames(geno_shrinkANO),]
-      time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil,MAP))
+      time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil=r2,MAP))
       time.chrld.reduct = as.numeric(round(time.chrld[3]/60,digits=2))
       new.geno.size <- dim(geno_shrink)
       #geno_shrink

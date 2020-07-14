@@ -263,9 +263,6 @@ RPS <- function(geno,N)
 #EMI <- function(geno,arg.A.mat=list(impute.method = "EM", tol = 0.02, return.imputed = TRUE)) 
 EMI <- function(geno) 
 {
-  library(rrBLUP)
-  
-  
   #EMI_result= do.call(rrBLUP::A.mat,args=c(X=geno, arg.A.mat))$imputed
   EMI_result= A.mat(X=geno, impute.method = "EM", tol = 0.02, return.imputed = TRUE)$imputed
   return(EMI_result)
@@ -604,7 +601,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
       Predict<-rep(NA,nObs)
       CD<-rep(NA,nObs)
       PredSD <-rep(NA,nObs)
-      #cvPred <- rep(NA, nObs)
+      cvPred <- rep(NA, nObs)
       #cvPredSD <-rep(NA,nObs)
       #cvCD <- rep(NA,nObs)
       #names(Pred)=names(pheno)
@@ -1039,7 +1036,6 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
   
-  library(BGLR)
   if (!requireNamespace("BGLR", quietly = TRUE)) {
     stop("BGLR needed for this function to work. Please install it.",
          call. = FALSE)
@@ -1389,7 +1385,7 @@ predict_BRNN<- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     stop("brnn needed for this function to work. Please install it.",
          call. = FALSE)
   }
-  library(brnn)
+  #library(brnn)
   #  library(glmnet)  # LASSO & Elastic-Net generalized linear models
   
   #do cross-validation to get the optimal value of lambda:
@@ -1436,7 +1432,7 @@ predict_GBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred
   y[names(phenoTrain)] <- phenoTrain
   yNa <- y
   yNa[rownames(genoPred)] <- NA
-  A <-A.mat(GENO) 
+  A <- A.mat(GENO) 
   
   if(FixedTrain!="NULL")
   {
@@ -1813,7 +1809,6 @@ predict_Lasso <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred
 {
   #(c)2013 V.G.TRAN
   
-  library(glmnet) 
   
   #do cross-validation to get the optimal value of lambda:
   
