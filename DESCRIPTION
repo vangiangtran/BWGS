@@ -9,5 +9,7 @@ License: GPL(>=2)
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.5.0)
-RoxygenNote: 7.1.0
 Imports: rrBLUP, BGLR, glmnet, randomForest, brnn, e1071
+URL: https://github.com/byzheng/BWGS
+BugReports: https://github.com/byzheng/BWGS/issues
+RoxygenNote: 7.1.0
