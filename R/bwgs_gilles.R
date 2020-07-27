@@ -989,7 +989,6 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesA'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
     
@@ -998,7 +997,6 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   
   else
   {
-    options(warn=-1)
     #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
     MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
@@ -1065,7 +1063,6 @@ predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesB'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
     
@@ -1073,7 +1070,6 @@ predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   
   else{
     ETA<-list(list(X=GENO,model='BayesB',probIn=0.05))
-    options(warn=-1)
     # MODEL=do.call(BGLR,args=c(y=yNa,args.BGLR))
     MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
@@ -1147,7 +1143,6 @@ predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BayesC'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
   }
@@ -1155,7 +1150,6 @@ predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   else
   {
     ETA<-list(list(X=GENO,model='BayesC'))
-    options(warn=-1)
     #MODEL=do.call(BGLR,args=c(y=yNa,arg.BGLR))
     MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
@@ -1221,15 +1215,12 @@ predict_BL <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BL'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
   }
   
   else{
     ETA<-list(list(X=GENO,model='BL'))
-    
-    options(warn=-1)
     #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
     MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
@@ -1297,7 +1288,6 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BRR'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
   }
@@ -1306,7 +1296,6 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   {
     ETA<-list(list(X=GENO,model='BRR'))
     
-    options(warn=-1)
     #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
     MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
@@ -1455,9 +1444,6 @@ predict_GBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred
                    PEV=TRUE,n.core=1,theta.seq=NULL)
   }
   
-  
-  
-  options(warn=-1)
   # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
   
   
@@ -1512,7 +1498,6 @@ predict_GBLUPB <- function(phenoTrain, genoTrain, genoPred,arg.kinship.BLUP=list
   #          list(K=exp(-h[2]*D),model='RKHS'),
   #         list(K=exp(-h[3]*D),model='RKHS'))
   ETA= list(list(K=A, model='RKHS'))
-  # options(warn=-1)
   # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
   MODEL <- BGLR(y=yNa,ETA=ETA,nIter=5000, burnIn=1000)
   
@@ -1581,8 +1566,6 @@ predict_MKRKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   ETA <- list(list(K=exp(-h[1]*D),model='RKHS'),
               list(K=exp(-h[2]*D),model='RKHS'),
               list(K=exp(-h[3]*D),model='RKHS'))
-  
-  options(warn=-1)
   # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
   MODEL <- BGLR(y=yNa,ETA=ETA,nIter=8000, burnIn=2000)
   
@@ -1645,7 +1628,6 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(K=K, model='RKHS'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=5000, burnIn=1000)
     fm=MODEL
   }
@@ -1653,7 +1635,6 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   {
     
     ETA= list(list(K=K, model='RKHS'))
-    options(warn=-1)
     # PREDICT <- do.call(BGLR::BGLR,args=c(y=yNa,ETA=ETA,arg.BGLR))
     MODEL <- BGLR(y=yNa,ETA=ETA,nIter=5000, burnIn=1000)
   }
@@ -1740,7 +1721,6 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
     ETA2<-list(list(X=FIX,model="FIXED"),list(X=GENO,model='BRR'),list(K=A_GENO*A_GENO,model='RKHS'))
-    options(warn=-1)
     MODEL=BGLR(y=yNa,ETA=ETA2,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
     fm=MODEL
   }
@@ -1748,7 +1728,6 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   
   else{
     ETA<-list(list(X=GENO,model='BRR'),list(K=A_GENO*A_GENO,model='RKHS'))
-    options(warn=-1);
     MODEL=BGLR(y=yNa,ETA=ETA,nIter=nIter,burnIn=burnIn,thin=thin,saveAt=saveAt,df0=5,S0=S0,weights=weights,R2=R2)
   }
   

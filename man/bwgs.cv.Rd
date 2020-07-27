@@ -124,9 +124,10 @@ phenotypic data from a reference population, with options for genotypic
 matrix processing and genomic breeding value estimation.
 }
 \examples{
-\dontrun{
+\donttest{
 data(inra)
-YieldGBLUP <- bwgs.cv(TRAIN47K, YieldBLUE, 
+# Cross validation using GBLUP method
+cv_gblup <- bwgs.cv(TRAIN47K, YieldBLUE, 
                        geno.impute.method = "mni",
                        predict.method = "gblup", 
                        nFolds = 10, 

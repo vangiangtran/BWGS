@@ -2,10 +2,11 @@ Package: BWGS
 Type: Package
 Title: BreedWheat Genomic Selection Pipeline
 Version: 0.1.0
-Author: Gilles CHARMET, Louis Gautier TRAN
-Maintainer: Bangyou Zheng <bangyou.zheng@csiro.au>
+Authors@R: c(person("Gilles", "Charmet", email = "gilles.charmet@inra.fr", role = "aut"), 
+  person("Louis Gautier", "Tran", role = "aut"),
+  person("Bangyou", "Zheng", email = "bangyou.zheng@csiro.au", role = "cre"))
 Description: Package for Breed Wheat Genomic Selection Pipeline. 
-    The R package BWGS is developed by Gilles Charmet <gilles.charmet@inra.fr>.
+    The R package 'BWGS' is developed by Gilles Charmet <gilles.charmet@inra.fr>.
     This repository is forked from original repository <https://forgemia.inra.fr/umr-gdec/bwgs>
     and modified as a R package.
 License: GPL(>=2)

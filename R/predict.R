@@ -62,9 +62,10 @@
 #' Note that gpredSD and CD are only available for methods using the BGLR library, namely GBLUP, EGBLUP, BA,BB,BC,BL,RKHS and MKRKHS. 
 #' These two columns contain NA for methods RF, RR, LASSO, EN and SVM.
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' data(inra)
-#' testPREDICT_GBLUP <- bwgs.predict(geno_train = TRAIN47K,
+#' # Prediction using GBLUP method
+#' predict_gblup <- bwgs.predict(geno_train = TRAIN47K,
 #'      pheno_train = YieldBLUE,
 #'      geno_target = TARGET47K,
 #'      MAXNA = 0.2, 

@@ -101,9 +101,10 @@ These two columns contain NA for methods RF, RR, LASSO, EN and SVM.
 Computes the GEBV prediction for the target population with only genotypic Data using the options for model selection.
 }
 \examples{
-\dontrun{
+\donttest{
 data(inra)
-testPREDICT_GBLUP <- bwgs.predict(geno_train = TRAIN47K,
+# Prediction using GBLUP method
+predict_gblup <- bwgs.predict(geno_train = TRAIN47K,
      pheno_train = YieldBLUE,
      geno_target = TARGET47K,
      MAXNA = 0.2, 
