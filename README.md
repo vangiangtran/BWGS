@@ -1,6 +1,6 @@
 # BWGS (BreedWheat Genomic Selection pipeline)
 
-[![Travis-CI Build Status](https://travis-ci.com/byzheng/BWGS.svg?branch=master)](https://travis-ci.com/byzheng/BWGS)
+![R-CMD-check](https://github.com/byzheng/BWGS/workflows/R-CMD-check/badge.svg)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/BWGS)](https://cran.r-project.org/package=BWGS)
 
 The R package BWGS is developed by Gilles Charmet <gilles.charmet@inra.fr>. This repository is forked from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and modified as a R package.
