@@ -1,3 +1,3 @@
 # Initial release 0.1.0
 
-This is the first release of BWGS.
+* This is the first release of BWGS.
