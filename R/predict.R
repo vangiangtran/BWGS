@@ -80,7 +80,7 @@
 #' }
 #' @export
 bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",FIXED_target="NULL",MAXNA=0.2,MAF=0.05,geno.reduct.method="NULL",reduct.size="NULL",r2="NULL",pval="NULL",
-                         MAP="NULL",geno.impute.method="NULL",predict.method="GBLUP") 
+                         MAP=NULL,geno.impute.method="NULL",predict.method="GBLUP") 
 {
   #(c)2015 louis.gautier.tran@gmail.com & gilles.charmet@clermont.inra.fr
   message("2017 BWGS  - Version 1.6.0 Release date: 31/02/2017")
@@ -108,6 +108,13 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   
   if(MAP!="NULL")
   {
+    if (length(rownames(MAP)) == 0) {
+      stop("Row names are required for MAP")
+    }
+    if (length(colnames(geno_train)) == 0) {
+      stop("Column names are required for geno_train")
+    }
+    
     MAPPED_markers=intersect(rownames(MAP),colnames(geno_train))
     
     MAP=MAP[MAPPED_markers,]
