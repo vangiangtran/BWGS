@@ -138,9 +138,9 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
     if (length(rownames(MAP)) == 0) {
       stop("Row names are required for MAP")
     }
-    if (length(colnames(geno_train)) == 0) {
-      stop("Column names are required for geno_train")
-    }
+    # if (length(colnames(geno_train)) == 0) {
+    #   stop("Column names are required for geno_train")
+    # }
     
     MAPPED_markers=intersect(rownames(MAP),colnames(geno))
     if (length(MAPPED_markers) == 0) {

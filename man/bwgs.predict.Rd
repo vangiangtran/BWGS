@@ -16,7 +16,7 @@ bwgs.predict(
   reduct.size = "NULL",
   r2 = "NULL",
   pval = "NULL",
-  MAP = "NULL",
+  MAP = NULL,
   geno.impute.method = "NULL",
   predict.method = "GBLUP"
 )
