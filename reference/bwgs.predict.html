@@ -114,22 +114,22 @@
     <p>Computes the GEBV prediction for the target population with only genotypic Data using the options for model selection.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>bwgs.predict</span>(
-  <span class='kw'>geno_train</span>,
-  <span class='kw'>pheno_train</span>,
-  <span class='kw'>geno_target</span>,
-  FIXED_train = <span class='st'>"NULL"</span>,
-  FIXED_target = <span class='st'>"NULL"</span>,
-  MAXNA = <span class='fl'>0.2</span>,
-  MAF = <span class='fl'>0.05</span>,
-  geno.reduct.method = <span class='st'>"NULL"</span>,
-  reduct.size = <span class='st'>"NULL"</span>,
-  r2 = <span class='st'>"NULL"</span>,
-  pval = <span class='st'>"NULL"</span>,
-  MAP = <span class='kw'>NULL</span>,
-  geno.impute.method = <span class='st'>"NULL"</span>,
-  predict.method = <span class='st'>"GBLUP"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>bwgs.predict</span><span class='op'>(</span>
+  <span class='va'>geno_train</span>,
+  <span class='va'>pheno_train</span>,
+  <span class='va'>geno_target</span>,
+  FIXED_train <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  FIXED_target <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  MAXNA <span class='op'>=</span> <span class='fl'>0.2</span>,
+  MAF <span class='op'>=</span> <span class='fl'>0.05</span>,
+  geno.reduct.method <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  reduct.size <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  r2 <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  pval <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  MAP <span class='op'>=</span> <span class='cn'>NULL</span>,
+  geno.impute.method <span class='op'>=</span> <span class='st'>"NULL"</span>,
+  predict.method <span class='op'>=</span> <span class='st'>"GBLUP"</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -232,21 +232,21 @@ These two columns contain NA for methods RF, RR, LASSO, EN and SVM.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>inra</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>inra</span><span class='op'>)</span>
 <span class='co'># Prediction using GBLUP method</span>
-<span class='kw'>predict_gblup</span> <span class='op'>&lt;-</span> <span class='fu'>bwgs.predict</span>(geno_train = <span class='kw'>TRAIN47K</span>,
-     pheno_train = <span class='kw'>YieldBLUE</span>,
-     geno_target = <span class='kw'>TARGET47K</span>,
-     MAXNA = <span class='fl'>0.2</span>, 
-     MAF = <span class='fl'>0.05</span>,
-     geno.reduct.method = <span class='st'>"NULL"</span>,
-     reduct.size = <span class='st'>"NULL"</span>,
-     r2 = <span class='st'>"NULL"</span>,
-     pval = <span class='st'>"NULL"</span>,
-     MAP = <span class='st'>"NULL"</span>,
-     geno.impute.method = <span class='st'>"MNI"</span>,
-     predict.method = <span class='st'>"GBLUP"</span>)
-</div><div class='output co'>#&gt; <span class='message'>2017 BWGS  - Version 1.6.0 Release date: 31/02/2017</span></div><div class='output co'>#&gt; <span class='message'>Start time:</span></div><div class='output co'>#&gt; [1] "2020-09-23 06:52:31 UTC"</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Number of common lines between geno and pheno</span></div><div class='output co'>#&gt; [1] 100</div><div class='output co'>#&gt; <span class='message'>Number of markers after filtering</span></div><div class='output co'>#&gt; [1]  200 8895</div><div class='output co'>#&gt; <span class='message'>Imputed by MNI.</span></div><div class='output co'>#&gt; <span class='message'>Time of imputation by MNI (mins):</span></div><div class='output co'>#&gt; [1] 0.01</div><div class='output co'>#&gt; <span class='message'>A part 5x20 of Imputed genotypic matrix:</span></div><div class='output co'>#&gt;         AX-89744268 AX-89360616 AX-89646106 AX-89376115 AX-89396818 AX-89372778
+<span class='va'>predict_gblup</span> <span class='op'>&lt;-</span> <span class='fu'>bwgs.predict</span><span class='op'>(</span>geno_train <span class='op'>=</span> <span class='va'>TRAIN47K</span>,
+     pheno_train <span class='op'>=</span> <span class='va'>YieldBLUE</span>,
+     geno_target <span class='op'>=</span> <span class='va'>TARGET47K</span>,
+     MAXNA <span class='op'>=</span> <span class='fl'>0.2</span>, 
+     MAF <span class='op'>=</span> <span class='fl'>0.05</span>,
+     geno.reduct.method <span class='op'>=</span> <span class='st'>"NULL"</span>,
+     reduct.size <span class='op'>=</span> <span class='st'>"NULL"</span>,
+     r2 <span class='op'>=</span> <span class='st'>"NULL"</span>,
+     pval <span class='op'>=</span> <span class='st'>"NULL"</span>,
+     MAP <span class='op'>=</span> <span class='st'>"NULL"</span>,
+     geno.impute.method <span class='op'>=</span> <span class='st'>"MNI"</span>,
+     predict.method <span class='op'>=</span> <span class='st'>"GBLUP"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>2017 BWGS  - Version 1.6.0 Release date: 31/02/2017</span></div><div class='output co'>#&gt; <span class='message'>Start time:</span></div><div class='output co'>#&gt; [1] "2020-11-03 01:28:00 UTC"</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Number of common lines between geno and pheno</span></div><div class='output co'>#&gt; [1] 100</div><div class='output co'>#&gt; <span class='message'>Number of markers after filtering</span></div><div class='output co'>#&gt; [1]  200 8895</div><div class='output co'>#&gt; <span class='message'>Imputed by MNI.</span></div><div class='output co'>#&gt; <span class='message'>Time of imputation by MNI (mins):</span></div><div class='output co'>#&gt; [1] 0.01</div><div class='output co'>#&gt; <span class='message'>A part 5x20 of Imputed genotypic matrix:</span></div><div class='output co'>#&gt;         AX-89744268 AX-89360616 AX-89646106 AX-89376115 AX-89396818 AX-89372778
 #&gt; Koreli            1          -1          -1          -1           1           1
 #&gt; CF03104           1          -1          -1          -1           1           0
 #&gt; Barok             1          -1          -1          -1          -1          -1
@@ -369,8 +369,8 @@ These two columns contain NA for methods RF, RR, LASSO, EN and SVM.</p>
 #&gt; 09BH006H047 91.863   2.946   NaN
 #&gt; 09BH039H031 91.773   2.037 0.620
 #&gt; 09BH019H049 89.672   2.604   NaN
-#&gt; 09BH006H054 92.821   2.570 0.143</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Stop time:</span></div><div class='output co'>#&gt; [1] "2020-09-23 06:52:34 UTC"
-#&gt; Time difference of 2.782661 secs</div><div class='input'><span class='co'># }</span>
+#&gt; 09BH006H054 92.821   2.570 0.143</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Stop time:</span></div><div class='output co'>#&gt; [1] "2020-11-03 01:28:03 UTC"
+#&gt; Time difference of 2.284259 secs</div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
