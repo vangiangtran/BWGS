@@ -1053,7 +1053,7 @@ predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   nIter=5000
   burnIn=1000
   thin=10
-  saveAt=''
+  saveAt=stringi::stri_rand_strings(1, 5, '[a-zA-Z]')
   S0=NULL
   weights=NULL
   R2=0.5
@@ -1133,7 +1133,7 @@ predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   nIter=5000
   burnIn=1000
   thin=3
-  saveAt=''
+  saveAt=stringi::stri_rand_strings(1, 5, '[a-zA-Z]')
   S0=NULL
   weights=NULL
   R2=0.5
@@ -1205,7 +1205,7 @@ predict_BL <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   nIter=5000;
   burnIn=1000;
   thin=3;
-  saveAt='';
+  saveAt=stringi::stri_rand_strings(1, 5, '[a-zA-Z]');
   S0=NULL;
   weights=NULL;
   R2=0.5;
@@ -1278,7 +1278,7 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   
   000;
   thin=3;
-  saveAt='';
+  saveAt=stringi::stri_rand_strings(1, 5, '[a-zA-Z]');
   S0=NULL;
   weights=NULL;
   R2=0.5;
@@ -1711,7 +1711,7 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   nIter=5000;
   burnIn=1000;
   thin=3;
-  saveAt='';
+  saveAt=stringi::stri_rand_strings(1, 5, '[a-zA-Z]');
   S0=NULL;
   weights=NULL;
   R2=0.5;
