@@ -208,7 +208,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   
   if((geno.impute.method=="NULL")|(geno.impute.method=="MNI")|(geno.impute.method=="EMI"))
   {
-    
+    geno_impute = geno
     if(geno.impute.method=="MNI"){ 
       
       
@@ -272,7 +272,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   { 
     
     if(geno.reduct.method=="NULL"){ 
-      geno_shrink <- geno 
+      geno_shrink <- geno_impute 
       message("No reduction for genomic data.")
       new.geno.size <- dim(geno_shrink)
     }

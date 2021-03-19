@@ -229,7 +229,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   
   
   #//////////////////////////////////////////////////////////////
-  #Step 1: Imputation "MNI" or "EMI"
+  #Step 1: Imputation "MNI" or "EMI"  or "NULL"
   #//////////////////////////////////////////////////////////////
   
   if((geno.impute.method=="NULL")|(geno.impute.method=="MNI")|(geno.impute.method=="EMI")) {
@@ -271,6 +271,24 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
     
     message("Imputed by MNI, EMI...finished.")
     if (FIXED!="NULL") {FIXED=round(MNI(FIXED))}
+    if(geno.impute.method=="NULL")
+    { 
+      
+      # emi.time.start = system.time()
+      # geno_impute <- EMI(geno_shrink)
+      # emi.time.stop = system.time()
+      geno_impute <- geno
+      
+      
+      
+      message("NO Imputation.")
+      
+      message("A part 5x20 of Imputed genotypic matrix:")
+      print(geno_impute[1:5,1:20],quote=FALSE)
+      message("")
+      
+    }
+    
     
     
   } else {
