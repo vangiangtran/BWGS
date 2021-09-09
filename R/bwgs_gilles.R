@@ -264,7 +264,7 @@ RPS <- function(geno,N)
 EMI <- function(geno) 
 {
   #EMI_result= do.call(rrBLUP::A.mat,args=c(X=geno, arg.A.mat))$imputed
-  EMI_result= A.mat(X=geno, impute.method = "EM", tol = 0.02, return.imputed = TRUE)$imputed
+  EMI_result= rrBLUP::A.mat(X=geno, impute.method = "EM", tol = 0.02, return.imputed = TRUE)$imputed
   return(EMI_result)
   
 }
