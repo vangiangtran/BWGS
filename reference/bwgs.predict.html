@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">BWGS</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -122,7 +122,7 @@
     <p>Computes the GEBV prediction for the target population with only genotypic Data using the options for model selection.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>bwgs.predict</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>bwgs.predict</span><span class='op'>(</span>
   <span class='va'>geno_train</span>,
   <span class='va'>pheno_train</span>,
   <span class='va'>geno_target</span>,
@@ -137,7 +137,7 @@
   MAP <span class='op'>=</span> <span class='cn'>NULL</span>,
   geno.impute.method <span class='op'>=</span> <span class='st'>"NULL"</span>,
   predict.method <span class='op'>=</span> <span class='st'>"GBLUP"</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -239,147 +239,171 @@ Three semi-parametric methods:</p><ul>
 These two columns contain NA for methods RF, RR, LASSO, EN and SVM.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>inra</span><span class='op'>)</span>
-<span class='co'># Prediction using GBLUP method</span>
-<span class='va'>predict_gblup</span> <span class='op'>&lt;-</span> <span class='fu'>bwgs.predict</span><span class='op'>(</span>geno_train <span class='op'>=</span> <span class='va'>TRAIN47K</span>,
-     pheno_train <span class='op'>=</span> <span class='va'>YieldBLUE</span>,
-     geno_target <span class='op'>=</span> <span class='va'>TARGET47K</span>,
-     MAXNA <span class='op'>=</span> <span class='fl'>0.2</span>, 
-     MAF <span class='op'>=</span> <span class='fl'>0.05</span>,
-     geno.reduct.method <span class='op'>=</span> <span class='st'>"NULL"</span>,
-     reduct.size <span class='op'>=</span> <span class='st'>"NULL"</span>,
-     r2 <span class='op'>=</span> <span class='st'>"NULL"</span>,
-     pval <span class='op'>=</span> <span class='st'>"NULL"</span>,
-     MAP <span class='op'>=</span> <span class='st'>"NULL"</span>,
-     geno.impute.method <span class='op'>=</span> <span class='st'>"MNI"</span>,
-     predict.method <span class='op'>=</span> <span class='st'>"GBLUP"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>2017 BWGS  - Version 1.6.0 Release date: 31/02/2017</span></div><div class='output co'>#&gt; <span class='message'>Start time:</span></div><div class='output co'>#&gt; [1] "2021-03-19 00:34:47 UTC"</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Number of common lines between geno and pheno</span></div><div class='output co'>#&gt; [1] 100</div><div class='output co'>#&gt; <span class='message'>Number of markers after filtering</span></div><div class='output co'>#&gt; [1]  200 8895</div><div class='output co'>#&gt; <span class='message'>Imputed by MNI.</span></div><div class='output co'>#&gt; <span class='message'>Time of imputation by MNI (mins):</span></div><div class='output co'>#&gt; [1] 0.01</div><div class='output co'>#&gt; <span class='message'>A part 5x20 of Imputed genotypic matrix:</span></div><div class='output co'>#&gt;         AX-89744268 AX-89360616 AX-89646106 AX-89376115 AX-89396818 AX-89372778
-#&gt; Koreli            1          -1          -1          -1           1           1
-#&gt; CF03104           1          -1          -1          -1           1           0
-#&gt; Barok             1          -1          -1          -1          -1          -1
-#&gt; CF99031           1           1          -1          -1           1           1
-#&gt; EM02209          -1          -1          -1          -1           1           1
-#&gt;         AX-89318796 AX-89560313 AX-89743189 AX-89749345 AX-89378706 AX-89349809
-#&gt; Koreli            1          -1          -1          -1           1           1
-#&gt; CF03104          -1          -1          -1          -1           1          -1
-#&gt; Barok            -1           1          -1           1           1          -1
-#&gt; CF99031          -1           1          -1          -1          -1          -1
-#&gt; EM02209           1           1          -1           1          -1           1
-#&gt;         AX-89636031 AX-89673942 AX-89324486 AX-89432902 AX-89654198 AX-89566186
-#&gt; Koreli            1          -1          -1          -1           1          -1
-#&gt; CF03104          -1          -1          -1          -1           1           1
-#&gt; Barok            -1          -1          -1           1           1          -1
-#&gt; CF99031          -1          -1          -1           1           1          -1
-#&gt; EM02209          -1          -1           1           1           1          -1
-#&gt;         AX-89563447 AX-89711500
-#&gt; Koreli            1          -1
-#&gt; CF03104          -1          -1
-#&gt; Barok            -1          -1
-#&gt; CF99031           1          -1
-#&gt; EM02209          -1           1</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Imputed by MNI, EMI...finished.</span></div><div class='output co'>#&gt; <span class='message'>No reduction for genomic data.</span></div><div class='output co'>#&gt; <span class='message'>Predict by GBLUP...</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt; <span class='message'>Phenotypic estimation GEBV:</span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt;              gpred gpredSD    CD
-#&gt; 09BH033H041 88.223   2.395 0.386
-#&gt; 09BH025H058 89.391   2.266 0.488
-#&gt; 09BH009H003 89.786   2.667   NaN
-#&gt; 09BH032H017 91.824   2.356 0.420
-#&gt; 09BH002H021 96.315   2.482 0.294
-#&gt; 09BH039H027 88.831   2.459 0.321
-#&gt; 09BH019H047 92.625   2.707   NaN
-#&gt; 09BH007H070 88.852   2.755   NaN
-#&gt; 09BH018H014 89.271   2.718   NaN
-#&gt; 09BH032H025 92.915   2.494 0.278
-#&gt; 09BH007H073 91.950   2.788   NaN
-#&gt; 09BH039H030 89.224   2.359 0.418
-#&gt; 09BH025H059 89.844   2.217 0.520
-#&gt; 09BH038H013 90.909   2.338 0.435
-#&gt; 09BH040H062 91.269   2.565 0.154
-#&gt; 09BH033H040 89.705   2.508 0.258
-#&gt; 09BH018H009 90.647   2.554 0.180
-#&gt; 09BH002H019 92.447   2.817   NaN
-#&gt; 09BH032H021 94.021   2.262 0.491
-#&gt; 09BH019H046 90.742   2.491 0.283
-#&gt; 09BH032H019 88.294   2.332 0.440
-#&gt; 09BH019H050 89.722   2.498 0.272
-#&gt; 09BH038H009 89.546   2.465 0.314
-#&gt; 09BH039H025 90.003   2.731   NaN
-#&gt; 09BH032H024 90.706   2.395 0.387
-#&gt; 09BH025H056 87.831   2.284 0.476
-#&gt; 09BH040H066 91.948   2.335 0.437
-#&gt; 09BH018H008 91.107   2.499 0.272
-#&gt; 09BH006H048 90.133   2.779   NaN
-#&gt; 09BH006H055 92.310   2.887   NaN
-#&gt; 09BH007H069 90.374   2.668   NaN
-#&gt; 09BH032H018 89.733   2.360 0.417
-#&gt; 09BH018H007 92.505   2.653   NaN
-#&gt; 09BH002H020 92.750   2.632   NaN
-#&gt; 09BH033H039 89.559   2.384 0.396
-#&gt; 09BH038H012 91.997   2.256 0.495
-#&gt; 09BH007H072 92.164   2.724   NaN
-#&gt; 09BH006H053 91.219   2.842   NaN
-#&gt; 09BH018H011 89.587   2.653   NaN
-#&gt; 09BH025H057 89.561   2.414 0.369
-#&gt; 09BH040H058 92.300   2.397 0.385
-#&gt; 09BH033H038 88.814   2.345 0.429
-#&gt; 09BH019H043 88.209   2.603   NaN
-#&gt; 09BH009H002 91.766   2.668   NaN
-#&gt; 09BH006H052 95.402   2.651   NaN
-#&gt; 09BH040H060 89.853   2.190 0.537
-#&gt; 09BH019H045 88.600   2.577 0.122
-#&gt; 09BH040H065 91.731   2.183 0.541
-#&gt; 09BH040H059 90.913   2.358 0.418
-#&gt; 09BH018H010 90.004   2.712   NaN
-#&gt; 09BH002H023 94.130   2.567 0.151
-#&gt; 09BH032H022 91.449   2.380 0.400
-#&gt; 09BH038H010 89.591   2.420 0.363
-#&gt; 09BH002H017 88.974   2.625   NaN
-#&gt; 09BH025H055 89.613   2.418 0.364
-#&gt; 09BH019H044 90.394   2.274 0.483
-#&gt; 09BH002H018 91.743   2.685   NaN
-#&gt; 09BH032H026 89.414   2.310 0.457
-#&gt; 09BH018H006 90.060   2.503 0.266
-#&gt; 09BH040H063 90.038   2.453 0.328
-#&gt; 09BH006H050 92.966   2.873   NaN
-#&gt; 09BH033H044 88.896   2.451 0.330
-#&gt; 09BH038H005 89.651   2.319 0.450
-#&gt; 09BH007H074 90.367   2.762   NaN
-#&gt; 09BH039H033 89.637   2.570 0.143
-#&gt; 09BH006H049 90.512   2.656   NaN
-#&gt; 09BH019H048 94.114   2.392 0.389
-#&gt; 09BH040H064 92.358   1.743 0.741
-#&gt; 09BH039H026 91.515   2.314 0.453
-#&gt; 09BH033H045 90.159   2.608   NaN
-#&gt; 09BH039H028 90.275   2.299 0.465
-#&gt; 09BH002H015 95.189   2.721   NaN
-#&gt; 09BH006H051 88.054   2.765   NaN
-#&gt; 09BH039H032 91.171   2.483 0.292
-#&gt; 09BH033H046 91.047   2.528 0.228
-#&gt; 09BH019H053 88.916   2.545 0.198
-#&gt; 09BH038H007 91.841   2.310 0.456
-#&gt; 09BH025H051 90.217   2.413 0.369
-#&gt; 09BH018H013 92.444   2.644   NaN
-#&gt; 09BH033H042 90.019   2.575 0.129
-#&gt; 09BH038H006 90.306   2.506 0.262
-#&gt; 09BH033H043 88.717   2.508 0.258
-#&gt; 09BH025H054 89.868   2.185 0.540
-#&gt; 09BH002H025 92.584   2.832   NaN
-#&gt; 09BH039H029 91.264   2.316 0.452
-#&gt; 09BH040H061 91.008   2.435 0.347
-#&gt; 09BH038H011 87.746   2.234 0.510
-#&gt; 09BH038H008 90.874   2.305 0.460
-#&gt; 09BH025H053 89.614   2.415 0.367
-#&gt; 09BH002H016 94.830   2.708   NaN
-#&gt; 09BH002H014 93.115   2.737   NaN
-#&gt; 09BH018H012 90.792   2.555 0.178
-#&gt; 09BH032H023 93.040   2.345 0.430
-#&gt; 09BH025H050 89.938   2.331 0.441
-#&gt; 09BH007H071 91.431   2.695   NaN
-#&gt; 09BH009H001 92.399   2.473 0.304
-#&gt; 09BH006H047 91.863   2.946   NaN
-#&gt; 09BH039H031 91.773   2.037 0.620
-#&gt; 09BH019H049 89.672   2.604   NaN
-#&gt; 09BH006H054 92.821   2.570 0.143</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Stop time:</span></div><div class='output co'>#&gt; [1] "2021-03-19 00:34:49 UTC"
-#&gt; Time difference of 2.42027 secs</div><div class='input'><span class='co'># }</span>
-</div></pre>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>inra</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># Prediction using GBLUP method</span></span>
+<span class='r-in'><span class='va'>predict_gblup</span> <span class='op'>&lt;-</span> <span class='fu'>bwgs.predict</span><span class='op'>(</span>geno_train <span class='op'>=</span> <span class='va'>TRAIN47K</span>,</span>
+<span class='r-in'>     pheno_train <span class='op'>=</span> <span class='va'>YieldBLUE</span>,</span>
+<span class='r-in'>     geno_target <span class='op'>=</span> <span class='va'>TARGET47K</span>,</span>
+<span class='r-in'>     MAXNA <span class='op'>=</span> <span class='fl'>0.2</span>, </span>
+<span class='r-in'>     MAF <span class='op'>=</span> <span class='fl'>0.05</span>,</span>
+<span class='r-in'>     geno.reduct.method <span class='op'>=</span> <span class='st'>"NULL"</span>,</span>
+<span class='r-in'>     reduct.size <span class='op'>=</span> <span class='st'>"NULL"</span>,</span>
+<span class='r-in'>     r2 <span class='op'>=</span> <span class='st'>"NULL"</span>,</span>
+<span class='r-in'>     pval <span class='op'>=</span> <span class='st'>"NULL"</span>,</span>
+<span class='r-in'>     MAP <span class='op'>=</span> <span class='st'>"NULL"</span>,</span>
+<span class='r-in'>     geno.impute.method <span class='op'>=</span> <span class='st'>"MNI"</span>,</span>
+<span class='r-in'>     predict.method <span class='op'>=</span> <span class='st'>"GBLUP"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> 2017 BWGS  - Version 1.6.0 Release date: 31/02/2017</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Start time:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2021-09-09 06:01:39 UTC"</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Number of common lines between geno and pheno</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 100</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Number of markers after filtering</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1]  200 8895</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Imputed by MNI.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Time of imputation by MNI (mins):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.01</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> A part 5x20 of Imputed genotypic matrix:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AX-89744268 AX-89360616 AX-89646106 AX-89376115 AX-89396818 AX-89372778</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Koreli            1          -1          -1          -1           1           1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF03104           1          -1          -1          -1           1           0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Barok             1          -1          -1          -1          -1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF99031           1           1          -1          -1           1           1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> EM02209          -1          -1          -1          -1           1           1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AX-89318796 AX-89560313 AX-89743189 AX-89749345 AX-89378706 AX-89349809</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Koreli            1          -1          -1          -1           1           1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF03104          -1          -1          -1          -1           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Barok            -1           1          -1           1           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF99031          -1           1          -1          -1          -1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> EM02209           1           1          -1           1          -1           1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AX-89636031 AX-89673942 AX-89324486 AX-89432902 AX-89654198 AX-89566186</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Koreli            1          -1          -1          -1           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF03104          -1          -1          -1          -1           1           1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Barok            -1          -1          -1           1           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF99031          -1          -1          -1           1           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> EM02209          -1          -1           1           1           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AX-89563447 AX-89711500</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Koreli            1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF03104          -1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Barok            -1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> CF99031           1          -1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> EM02209          -1           1</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Imputed by MNI, EMI...finished.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> No reduction for genomic data.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Predict by GBLUP...</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>NaNs produced</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Phenotypic estimation GEBV:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              gpred gpredSD    CD</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H041 88.223   2.395 0.386</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H058 89.391   2.266 0.488</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH009H003 89.786   2.667   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H017 91.824   2.356 0.420</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H021 96.315   2.482 0.294</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H027 88.831   2.459 0.321</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H047 92.625   2.707   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH007H070 88.852   2.755   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H014 89.271   2.718   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H025 92.915   2.494 0.278</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH007H073 91.950   2.788   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H030 89.224   2.359 0.418</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H059 89.844   2.217 0.520</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H013 90.909   2.338 0.435</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H062 91.269   2.565 0.154</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H040 89.705   2.508 0.258</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H009 90.647   2.554 0.180</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H019 92.447   2.817   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H021 94.021   2.262 0.491</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H046 90.742   2.491 0.283</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H019 88.294   2.332 0.440</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H050 89.722   2.498 0.272</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H009 89.546   2.465 0.314</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H025 90.003   2.731   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H024 90.706   2.395 0.387</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H056 87.831   2.284 0.476</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H066 91.948   2.335 0.437</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H008 91.107   2.499 0.272</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H048 90.133   2.779   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H055 92.310   2.887   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH007H069 90.374   2.668   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H018 89.733   2.360 0.417</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H007 92.505   2.653   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H020 92.750   2.632   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H039 89.559   2.384 0.396</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H012 91.997   2.256 0.495</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH007H072 92.164   2.724   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H053 91.219   2.842   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H011 89.587   2.653   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H057 89.561   2.414 0.369</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H058 92.300   2.397 0.385</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H038 88.814   2.345 0.429</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H043 88.209   2.603   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH009H002 91.766   2.668   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H052 95.402   2.651   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H060 89.853   2.190 0.537</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H045 88.600   2.577 0.122</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H065 91.731   2.183 0.541</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H059 90.913   2.358 0.418</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H010 90.004   2.712   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H023 94.130   2.567 0.151</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H022 91.449   2.380 0.400</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H010 89.591   2.420 0.363</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H017 88.974   2.625   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H055 89.613   2.418 0.364</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H044 90.394   2.274 0.483</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H018 91.743   2.685   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H026 89.414   2.310 0.457</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H006 90.060   2.503 0.266</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H063 90.038   2.453 0.328</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H050 92.966   2.873   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H044 88.896   2.451 0.330</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H005 89.651   2.319 0.450</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH007H074 90.367   2.762   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H033 89.637   2.570 0.143</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H049 90.512   2.656   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H048 94.114   2.392 0.389</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H064 92.358   1.743 0.741</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H026 91.515   2.314 0.453</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H045 90.159   2.608   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H028 90.275   2.299 0.465</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H015 95.189   2.721   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H051 88.054   2.765   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H032 91.171   2.483 0.292</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H046 91.047   2.528 0.228</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H053 88.916   2.545 0.198</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H007 91.841   2.310 0.456</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H051 90.217   2.413 0.369</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H013 92.444   2.644   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H042 90.019   2.575 0.129</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H006 90.306   2.506 0.262</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH033H043 88.717   2.508 0.258</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H054 89.868   2.185 0.540</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H025 92.584   2.832   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H029 91.264   2.316 0.452</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH040H061 91.008   2.435 0.347</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H011 87.746   2.234 0.510</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH038H008 90.874   2.305 0.460</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H053 89.614   2.415 0.367</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H016 94.830   2.708   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH002H014 93.115   2.737   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH018H012 90.792   2.555 0.178</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH032H023 93.040   2.345 0.430</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH025H050 89.938   2.331 0.441</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH007H071 91.431   2.695   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH009H001 92.399   2.473 0.304</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H047 91.863   2.946   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH039H031 91.773   2.037 0.620</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH019H049 89.672   2.604   NaN</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 09BH006H054 92.821   2.570 0.143</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Stop time:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2021-09-09 06:01:41 UTC"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Time difference of 2.389064 secs</span>
+<span class='r-in'><span class='co'># }</span></span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -395,7 +419,7 @@ These two columns contain NA for methods RF, RR, LASSO, EN and SVM.</p>
 </div>
 
 <div class="pkgdown">
-  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p></p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
