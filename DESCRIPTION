@@ -1,7 +1,7 @@
 Package: BWGS
 Type: Package
 Title: BreedWheat Genomic Selection Pipeline
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(person("Gilles", "Charmet", email = "gilles.charmet@inra.fr", role = "aut"), 
   person("Louis Gautier", "Tran", role = "aut"),
   person("Bangyou", "Zheng", email = "bangyou.zheng@csiro.au", role = "cre"))
