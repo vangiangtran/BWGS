@@ -6,7 +6,7 @@
 [![](http://cranlogs.r-pkg.org/badges/last-month/BWGS?color=green)](https://cran.r-project.org/package=BWGS)
 [![](http://cranlogs.r-pkg.org/badges/last-week/BWGS?color=green)](https://cran.r-project.org/package=BWGS)
 
-The R package BWGS is developed by Gilles Charmet <gilles.charmet@inra.fr>. This repository is forked from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and modified as a R package.
+The R package BWGS is developed by Louis Gautier Tran <louis.gautier.tran@gmail.com> and Gilles Charmet <gilles.charmet@inra.fr>. This repository is forked from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and modified as a R package.
 
 
 ## Installation

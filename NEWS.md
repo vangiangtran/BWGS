@@ -5,3 +5,7 @@
 # BWGS 0.2.0
 
 * Several bug fixes
+
+# BWGS 0.2.1
+
+* Update author list
