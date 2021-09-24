@@ -25,7 +25,7 @@ devtools::install_github('eurominister/BWGS')
 
 ## Documentation
 
-See full documentation from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and [publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0222733).
+See full documentation from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and [publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0222733)
 
 ## Reference
 
