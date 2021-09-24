@@ -1,7 +1,8 @@
-#gstools_pipeline - derived from bwgs
-#@ 2017 Sophie Bouchet, Louis Gautier Tran, CHARMET Gilles
-#Version 1.0.0 - Release date: 31/02/2017
-#bwgs_gilles_v55.R
+#BWGS Toolbox 2012-2021
+#@ 2021 Dr. Louis Gautier Tran, Dr. Gilles Charmet, Dr. Sophie Bouchet
+#@ Contact: louis.gautier.tran@eurominister.com; gilles.charmet@inra.fr
+#@ Where are the functions/codes created by Dr. Sophie Bouchet?
+#Version 3.0.0 - Release date: 25-09-2021
 
 #/////////////////////////////////////////////////////////////////////
 
