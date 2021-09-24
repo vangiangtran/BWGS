@@ -1,4 +1,4 @@
-#BWGS Toolbox 2012-2021
+#BWGS Toolbox 2012-2021 - BreadWheat Genomic Selection
 #@ 2021 Dr. Louis Gautier Tran, Dr. Gilles Charmet, Dr. Sophie Bouchet
 #@ Contact: louis.gautier.tran@eurominister.com; gilles.charmet@inra.fr
 #@ Where are the functions/codes created by Dr. Sophie Bouchet?
