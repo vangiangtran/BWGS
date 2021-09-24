@@ -1,5 +1,5 @@
 #' Computes the GEBV prediction for the target population with only genotypic Data using the options for model selection.
-#'
+#' (c)2021 by Louis Gautier Tran & Gilles Charmet
 #' @param geno_train  Matrix (n x m) of genotypes for the training population: n lines with m markers. Genotypes should be coded as {-1, 0, 1, NA}. Missing data are allowed and coded as NA.
 #' @param pheno_train Vector (n x 1) of phenotype for the training phenotypes. This vector should have no missing values. Otherwise, missing values (NA) will be omitted in both pheno_train and geno_train.
 #' @param geno_target Matrix (z x m) of genotypes for the target population: z lines with the same m markers as in geno_train. Genotypes should be coded as {-1, 0, 1, NA}. Missing data are allowed and coded as NA. Other arguments are identical to those of bwgs.cv, except pop_reduct_method, nTimes and nFolds, since the prediction is run only once, using the whole training population for model estimation, then applied to the target population.
@@ -83,7 +83,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
                          MAP=NULL,geno.impute.method="NULL",predict.method="GBLUP") 
 {
   #(c)2015 louis.gautier.tran@gmail.com & gilles.charmet@clermont.inra.fr
-  message("2017 BWGS  - Version 1.6.0 Release date: 31/02/2017")
+  message("2021 BWGS  - Version 3.0.0 Release date: 25-09-2021")
   #message("2015 Gilles Charmet & Louis Gautier Tran)
   
   # upload the necessary libraries
@@ -210,7 +210,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   {
     geno_impute = geno
     if(geno.impute.method=="MNI"){ 
-      
+      #(c)2015 Louis Gautier Tran
       
       time.mni = system.time(geno_impute <- MNI(geno))
       time.mni.impute = as.numeric(round(time.mni[3]/60,digits=2))
@@ -226,7 +226,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     
     if(geno.impute.method=="EMI")
     { 
-      
+      #(c)2015 Louis Gautier Tran
       # emi.time.start = system.time()
       # geno_impute <- EMI(geno_shrink)
       # emi.time.stop = system.time()
@@ -270,7 +270,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   
   if((geno.reduct.method=="NULL")|(geno.reduct.method=="RMR")|(geno.reduct.method=="ANO")|(geno.reduct.method=="LD")|(geno.reduct.method=="ANO+LD")) 
   { 
-    
+    #(c)2015 Louis Gautier Tran
     if(geno.reduct.method=="NULL"){ 
       geno_shrink <- geno_impute 
       message("No reduction for genomic data.")
@@ -281,7 +281,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     if(geno.reduct.method=="RMR"){   
       
       #if(is.null(reduct.size)) {stop("Please choose the size of columns for new genotypic data.")}
-      
+      #(c)2015 Louis Gautier Tran
       if(!is.null(reduct.size)){
         #shrink_size <- as.numeric(reduct.size)
         time.rmr = system.time(geno_shrink <- RMR(geno,reduct.size))
@@ -302,7 +302,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     if(geno.reduct.method=="ANO"){   
       
       #if(is.null(reduct.size)) {stop("Please choose the size of columns for new genotypic data.")}
-      
+      #(c)2015 Louis Gautier Tran
       if(!is.null(pval)){
         
         time.ano = system.time(genoTrain_shrink <- ANO(pheno_train,geno_train_impute,pval))
@@ -327,7 +327,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     {    
       if(!is.null(pval))
       {
-        
+        #(c)2015 Louis Gautier Tran
         time.ano = system.time(genoTrain_shrinkANO <- ANO(pheno_train,geno_train_impute,pval))
         time.ano.reduct = as.numeric(round(time.ano[3]/60,digits=2))
         genoTrain_shrinkANO=genoTrain_shrinkANO[,!is.na(colnames(geno_shrinkANO))]
@@ -365,7 +365,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
       {
         stop("Please choose MAP for LD reduction.")
       } # END OF LD reduction
-      
+       #(c)2015 Louis Gautier Tran
       
       MAP2=MAP[colnames(geno_shrinkANO),]
       time.chrld = system.time(geno_shrink <- CHROMLD(geno_impute,R2seuil=r2,MAP))
@@ -405,7 +405,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   #/////////////////////////////////////////////////////
   #STEP 3: BREEDING VALUE PREDICTION PROCESS
   #/////////////////////////////////////////////////////
-  
+  #(c)2015 Louis Gautier Tran
   if((predict.method=="EN")|(predict.method=="SVM")|(predict.method=="EGBLUP")|(predict.method=="RR")|(predict.method=="BA")|
      (predict.method=="BB")|(predict.method=="LASSO")|(predict.method=="BL")|(predict.method=="BC")|(predict.method=="GBLUP")|
      (predict.method=="BRNN")|(predict.method=="MKRKHS")|(predict.method=="RF")|(predict.method=="BRR")|(predict.method=="RKHS"))
