@@ -17,12 +17,12 @@ Install from CRAN
 install.packages("BWGS")
 ```
 
-Install dev version from github [Github](https://github.com/byzheng/BWGS) only.
+Install dev version from github [Github](https://github.com/eurominister/BWGS) 
 
 ```r
-devtools::install_github('byzheng/BWGS')
+devtools::install_github('eurominister/BWGS')
 ```
 
 ## Documentation
 
-See reference from [here](https://bwgs.bangyou.me). See full documentation from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and [publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0222733).
+See full documentation from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and [publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0222733).
