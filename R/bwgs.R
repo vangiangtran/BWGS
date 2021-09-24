@@ -3,7 +3,7 @@
 #@ Contact: louis.gautier.tran@eurominister.com; gilles.charmet@inra.fr
 #@ Where are the functions/codes created by Dr. Sophie Bouchet?
 #Version 3.0.0 - Release date: 25-09-2021
-
+#The original authors must be cited when copy, distribute, or reuse the content
 #/////////////////////////////////////////////////////////////////////
 
 percentNA=function(x)
