@@ -9,3 +9,7 @@
 # BWGS 0.2.1
 
 * Update author list
+
+# BWGS 3.0.1
+
+* Code updated 
