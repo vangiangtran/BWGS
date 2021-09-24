@@ -27,9 +27,7 @@ devtools::install_github('eurominister/BWGS')
 
 See full documentation from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and [publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0222733).
 
-##References
-
-References
+## Reference
 
 G. Charmet, L.G. Tran, J. Auzanneau and R. Rincent, S. Bouchet (2020) BWGS: A R package for genomic selection and its application to a wheat breeding programme. PLOS ONE 15(4): e0222733. https://doi.org/10.1371/journal.pone.0222733
 
