@@ -1,5 +1,6 @@
-
 #Title  bwgs.cv
+#(c)2012-2021 Louis Gautier Tran & Gilles Charmet
+#GPL-V2 licence 
 #' @title Genomic Prediction with cross validation
 #' @description The bwgs.cv function carries out cross-validation using genotypic and
 #' phenotypic data from a reference population, with options for genotypic
@@ -108,7 +109,8 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
                     nTimes)
 {
   #(c)2015 louis.gautier.tran@gmail.com & gilles.charmet@clermont.inra.fr
-  message("2017 BWGS  - Version 1.10.0 Release date: 31/10/2017")
+  #message("2017 BWGS  - Version 1.10.0 Release date: 31/10/2017")
+  message("2021 BWGS  - Version 3.0.0 Release date: 25/09/2021")
   #message("2015 Gilles Charmet & Louis Gautier Tran)
   
   
@@ -619,6 +621,8 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   
   
   Results
+  
+  #The original authors must be cited when copy, distribute, or reuse the content
   
 } 
 
