@@ -33,7 +33,7 @@ myMean=function(x)
 
 AM <- function(geno,arg.A.mat=list(min.MAF=NULL,max.missing=NULL,impute.method="mean",tol=0.02,n.core=1,shrink=TRUE,return.imputed=TRUE))
 {
-  
+  #Louis Gautier Tran, Gilles Charmet
   
   #Shrink_result = A.mat(X=geno, impute.method = "mean", tol = 0.02, return.imputed = FALSE)$A
   #library(rrBLUP)
@@ -44,11 +44,11 @@ AM <- function(geno,arg.A.mat=list(min.MAF=NULL,max.missing=NULL,impute.method="
 
 
 #///////////////////////////////////////
-#  RMR: Randaom sampling of markers
+#  RMR: Random sampling of markers
 #///////////////////////////////////////
 
 RMR <- function(geno,N) 
-  
+#(c)2014 Louis Gautier Tran, Gilles Charmet  
 {
   ncolG <- ncol(geno)
   V <- sample(1:ncolG,N,replace=F)
@@ -78,6 +78,7 @@ ANO <- function(P,GG,pval)
 
 # function to run ANOVA
 ANOV <- function(P,GG)
+#(c)2015 Gilles Charmet & Louis Gautier Tran 
 {
   TESTF=rep(0,ncol(GG))
   for (i in 1:ncol(GG))
@@ -108,6 +109,7 @@ ANOV <- function(P,GG)
 #/////////////////////////////////////////////////////////////////////////////////////////
 
 NEWLD <- function(geno,R2seuil)
+#(c)2015 Gilles Charmet & Louis Gautier Tran 
 {
   genoNA=MNI(geno)
   CORLD=cor(genoNA,use="pairwise.complete.obs")
@@ -136,7 +138,7 @@ NEWLD <- function(geno,R2seuil)
 #
 
 NEWLD_clean <- function(geno_data,CORLD,R2seuil) 
-  
+#(c) 2015 Gilles Charmet & Louis Gautier Tran
 {
   #  R2seuil=lambda
   # function to select a subset of marker from columns of geno_data
@@ -176,6 +178,7 @@ NEWLD_clean <- function(geno_data,CORLD,R2seuil)
 #/////////////////////////////////////////////////////////////////////////////
 
 CHROMLD <- function(geno,R2seuil,MAP) 
+#(c) 2015 Louis Gautier Tran & Gilles Charmet
 { 
   geno_test <- geno
   chrom=MAP[,"chrom"]
@@ -254,6 +257,7 @@ RPS <- function(geno,N)
 
 #EMI <- function(geno,arg.A.mat=list(impute.method = "EM", tol = 0.02, return.imputed = TRUE)) 
 EMI <- function(geno) 
+  #(c) 2015 Louis Gautier Tran & Gilles Charmet
 {
   #EMI_result= do.call(rrBLUP::A.mat,args=c(X=geno, arg.A.mat))$imputed
   EMI_result= rrBLUP::A.mat(X=geno, impute.method = "EM", tol = 0.02, return.imputed = TRUE)$imputed
@@ -274,7 +278,7 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
 {
   
   #start.time.cv <- Sys.time()
-  
+  #(c) 2014 Louis Gautier V.G. Tran & Delphine Ly
   listGENO=rownames(geno)
   listPHENO=names(pheno)
   LIST=intersect(listGENO,listPHENO)
@@ -343,8 +347,8 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
     waitingbar(runif(timebar)) # Windows Bar
     #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2)  # pourcentage/100%
     #saveAcc[time] <- round(cor(cvPred, pheno),digits=2) # normal
-    #saveAcc[time] <- round(mean(ACCU),digits=3) # 04/05/2015 VG TRAN
-    saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+    #saveAcc[time] <- round(mean(ACCU),digits=3) # 04/05/2015 V.G. TRAN
+    saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 Louis Gautier V.G. TRAN
     message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
     savePred <- savePred + cvPred 
     # SD <- round(sd(saveAcc[time]),digits=4)
