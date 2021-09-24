@@ -2,11 +2,8 @@
 #@ 2017 Sophie Bouchet, Louis Gautier Tran, CHARMET Gilles
 #Version 1.0.0 - Release date: 31/02/2017
 #bwgs_gilles_v55.R
-#sophie.bouchet@inra.fr
-#gilles.charmet@inra.fr
+
 #/////////////////////////////////////////////////////////////////////
-
-
 
 percentNA=function(x)
 {
@@ -27,12 +24,6 @@ myMean=function(x)
   
   M
 }
-
-
-
-
-
-
 
 ##REDUCTION MODELS and other miscellaneous functions
 
@@ -73,7 +64,7 @@ ANO <- function(P,GG,pval)
 {
   
   #Genotypic Reduction by Association (ANOVA)
-  #(c)15/06/2015 G. CHARMET & V.G. TRAN
+  #(c)15/06/2015 Gilles Charmet & Louis Gautier Tran 
   #GG = geno
   #P = pheno
   #genotypes and phenotypes must not have NAs
@@ -213,11 +204,12 @@ CHROMLD <- function(geno,R2seuil,MAP)
 #////////////////////////////////////////////////////////////////////////////////////
 #  RMGG  to create random NA value in geno, useful for testing Imputation methdos
 #////////////////////////////////////////////////////////////////////////////////////
+# Original authors must be cited when reuse this methodology
 
 RMGG <-function(G, N) 
 {
   #RMMG - Random Missing Matrix Generator
-  #(c)2014 V.G. TRAN & G. CHARMET
+  #(c)2014 Louis Gautier V.G. TRAN & G. CHARMET
   #G: genotypic matrix
   #N: % missing
   nRow = dim(G)[1]
@@ -238,12 +230,12 @@ RMGG <-function(G, N)
 #  RPS  function for randomly sampling individuals (lines)
 # ONLY useful for teachning purpose, NOT in real life
 #////////////////////////////////////////////////////////////
-
+# Original authors must be cited when reuse this methodology
 
 RPS <- function(geno,N) 
 { 
   #Random Pop Size
-  #(c)03/12/2014 vangiang.tran@gmail.com & gilles.charmet@clermont.inra.fr
+  #(c)03/12/2014 Louis Gautier Tran & Gilles Charmet
   nrowG <- nrow(geno)
   V <- sample(1:nrowG,N,replace=F)
   random_geno <- geno[V,]
@@ -268,7 +260,6 @@ EMI <- function(geno)
   return(EMI_result)
   
 }
-
 
 
 #////////////////////////////////////////////////////////////////
@@ -377,10 +368,11 @@ runCrossVal <- function(pheno, geno, predictor, nFolds, nTimes)
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # runCV  carries out cross validation, returns prediction and CD for each line (available only with some methods)
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Cite Louis Gautier Tran & Delphine Ly when reuse this function
 
 runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, nTimes) 
 {
-  #(c)2014 V.G. TRAN & D. LY
+  #(c)2014 Louis Gautier V.G. TRAN & D. LY
   class_cv <- list()#start.time.cv <- Sys.time()
   notIsNA <- !is.na(pheno)
   pheno <- pheno[notIsNA]
@@ -393,9 +385,8 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
   savePredSD <-rep(0,nObs)
   saveCD <-rep (0,nObs)
   # cvtable <- matrix(rep(0,n_row*n_col),n_row,n_col)
-  # ACCU <- rep(0,nFolds) #initial de ACC pour plusieurs folds 04/05/2015 VG TRAN
-  
-  
+  # ACCU <- rep(0,nFolds) #initial of ACC for many folds 04/05/2015 Louis Gautier V.G. TRAN
+ 
   class_predict = list()
   class_predSD = list()
   class_CD = list()
@@ -410,7 +401,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
   {
     #   timebar <- time*100/nTimes # For Windows Time Bar#   waitingbar(runif(timebar)) # Windows Bar#   
     #Random Pop Size (added on 08/06/2015 V.G. TRAN)
-    ACCU <- rep(0,nFolds) #initial de ACC pour plusieurs folds 04/05/2015 VG TRAN
+    ACCU <- rep(0,nFolds) #initial of ACC for many folds 04/05/2015 V.G. TRAN
     
     
     if (pop.reduct.method=="NULL") 
@@ -421,10 +412,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
       Predict <- rep(0, nObs)
       PredSD <-rep(0, nObs)
       CD <-rep(0, nObs)
-      
-      
-      
-      
+            
       folds <- sample(rep(1:nFolds, length.out=nObs))
       
       for (fold in 1:nFolds)
@@ -454,11 +442,11 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
         
         
         corr <- cor(pred[,1],valid)
-        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
+        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 V.G. TRAN
         
         message("")
         # message(c("cv correlation for fold ",fold," is: ",accu));
-        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
+        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 V.G. TRAN
         
         # Predict[rownames(pred)] <- pred[,1]
         # PredSD [rownames(pred)] <- pred[,2]
@@ -476,7 +464,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
       #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
       saveAcc[time] <- round(cor(Predict, pheno, use="na.or.complete"),digits=3) # normal
       saveMSEP[time] <- round(sqrt(((Predict-pheno)^2)/length(pheno)),3)
-      # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+      # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 Louis Gautier V.G. TRAN
       #saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=2) 
       message("")
       message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
@@ -549,13 +537,13 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
         # Correlation entre valid/pred 
         
         # accu <- round(cor(pred[,1],phenoReal),digits=2);
-        # ACCU[fold] <- round(cor(pred,valid),digits=2)# 04/05/2015 VG TRAN
+        # ACCU[fold] <- round(cor(pred,valid),digits=2)# 04/05/2015 Louis Gautier V.G. TRAN
         corr <- cor(pred[,1],valid)
-        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 VG TRAN
+        ACCU[fold] <- round(corr[1],digits=3)# 04/05/2015 V.G. TRAN
         
         message("")
         # message(c("cv correlation for fold ",fold," is: ",accu));
-        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
+        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 V.G. TRAN
         
         
       }  # fold loop
@@ -569,7 +557,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
       #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
       saveAcc[time] <- round(cor(Predict, pheno,use="na.or.complete"),digits=3) # normal
       saveMSEP[time] <- round(sqrt(((Predict-pheno)^2)/length(pheno)),3)
-      #saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+      #saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 V.G. TRAN
       #saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=2) 
       message("")
       message(c("Mean CV correlation for time ",time," and ",nFolds," folds is: ",saveAcc[time]))
@@ -654,7 +642,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
         
         message("")
         # message(c("cv correlation for fold ",fold," is: ",accu));
-        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 VG TRAN
+        message(c("cv correlation for fold ",fold," is: ",ACCU[fold])) # 04/05/2015 Louis Gautier V.G. TRAN
         
         
         
@@ -672,7 +660,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
       #saveAcc[time] <- round(cor(cvPred, pheno)*100,digits=2);  # pourcentage/100%
       saveAcc[time] <- round(cor(cvPred, pheno,use="pairwise.complete.obs"),digits=3) # normal
       
-      # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 VG TRAN
+      # saveAcc[(((time-1)*nFolds)+1):(time*nFolds)] <- round(ACCU,digits=2) # 04/05/2015 V.G. TRAN
       #saveAcc[time] <- round(mean(ACCU,na.rm=T),digits=3)
       #saveAcc[time] <- round(cor(Predict, pheno[names(Predict)],use="na.or.complete"),digits=3)
       saveMSEP[time] <- round(sqrt(sum((Predict-pheno)^2)/length(pheno)),3)
@@ -751,7 +739,7 @@ meanNA <- function(x)
 
 Run_All_Cross_Validation <- function(pheno,geno_impute,nFolds,nTimes)
 {
-  #(c)2013 V.G. TRAN
+  #(c)2013 Louis Gautier V.G. TRAN
   
   #cross validation for predict_ElasticNet(with glmnet): 
   
@@ -764,7 +752,6 @@ Run_All_Cross_Validation <- function(pheno,geno_impute,nFolds,nTimes)
   names(EN_Results) = c("Mean Correlation CVs","Standard Deviation CVs","Time taken (mins)")
   message(EN_Results)
   message("")
-  
   
   #cross validation for predictor_SVM:
   
@@ -801,7 +788,6 @@ Run_All_Cross_Validation <- function(pheno,geno_impute,nFolds,nTimes)
   names(LASSO_Results) = c("Mean Correlation CVs","Standard Deviation CVs","Time taken (mins)")
   message(LASSO_Results)
   message("")
-  
   
   #cross validation for predictor_GBLUP:
   
@@ -956,7 +942,7 @@ Run_All_Cross_Validation <- function(pheno,geno_impute,nFolds,nTimes)
 
 predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
-  #(c)2015 V.G.TRAN & G.CHARMET
+  #(c)2015 Louis Gautier V.G.TRAN & G.CHARMET
   #BayesA
   #library(BGLR)
   if (!requireNamespace("BGLR", quietly = TRUE)) 
@@ -994,7 +980,6 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     
   }
   
-  
   else
   {
     #MODEL=do.call(BGLR(y=yNa,arg.BGLR))
@@ -1026,8 +1011,6 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   
 }
 
-
-
 #////////////////////////////////////////////////////////////////////////////
 # predict_BB uses BGLR library
 #//////////////////////////////////////////////////////////////////////////////////////
@@ -1038,7 +1021,6 @@ predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
     stop("BGLR needed for this function to work. Please install it.",
          call. = FALSE)
   }
-  
   
   
   GENO = rbind(genoTrain,genoPred)
@@ -1104,7 +1086,7 @@ predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   
 {
-  #(c)2015 V.G.TRAN & G.CHARMET
+  #(c)2015 Louis Gautier V.G.TRAN & G.CHARMET
   #BayesC for Genomic Selection
   #  library(BGLR)
   if (!requireNamespace("BGLR", quietly = TRUE)) {
@@ -1753,7 +1735,7 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
 predict_RR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred) 
 {
   
-  #(c)2013 V.G.TRAN
+  #(c)2013 Louis Gautier V.G.TRAN
   if (!requireNamespace("glmnet", quietly = TRUE)) {
     stop("glmnet needed for this function to work. Please install it.",
          call. = FALSE)
@@ -1786,7 +1768,7 @@ predict_RR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 
 predict_Lasso <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 {
-  #(c)2013 V.G.TRAN
+  #(c)2013 Louis Gautier V.G.TRAN
   
   
   #do cross-validation to get the optimal value of lambda:
@@ -1813,7 +1795,10 @@ predict_Lasso <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred
 predict_SVM <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred) 
 {
   
-  #(c)2013 vangiang.tran@gmail.com
+  #(c)2013 Louis Gautier V.G. Tran
+  #louis.gautier.tran@gmail.com
+  #Cite the author when reuse this function
+  
   if (!requireNamespace("e1071", quietly = TRUE)) {
     stop("e1071 needed for this function to work. Please install it.",
          call. = FALSE)
@@ -1839,7 +1824,7 @@ predict_SVM <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
 
 
 transfer <- function(data,time.cal,ncol_geno_shrink) {
-  #(c)2014 V.G. TRAN
+  #(c)2014 Louis Gautier V.G. TRAN
   SUMMA <- data[[1]]
   L <- length(SUMMA)
   Summary <- c(mean(SUMMA[1:L-1],na.rm=T),SUMMA[L],round(time.cal[3]/60,digits=2),ncol_geno_shrink)
@@ -1869,10 +1854,8 @@ transfer <- function(data,time.cal,ncol_geno_shrink) {
 
 #waitingbar <- function(x)
 
-
-
 waitingbar <- function(x = sort(runif(20)), ...) {
-  #(c)2013 V.G. TRAN
+  #(c)2013 Louis Gautier V.G. TRAN
   
   pb <- txtProgressBar(min=0,max=1,initial=0,char="*",width=40,style=3)
   for(i in c(0, x, 1)) {Sys.sleep(0.1)
@@ -1891,14 +1874,12 @@ waitingbar <- function(x = sort(runif(20)), ...) {
 #//////////////////////////////////////////////////////////////////////////////////////
 
 qtlSIM <- function(geno,NQTL=100,h2=0.3) {
-  #(c)2014 G. CHARMET & V.G. TRAN
-  
-  
-  
+  #(c)2014 G. CHARMET & Louis Gautier V.G. TRAN
+  #cite the authors when reuse this function
+ 
   RealizedH2 <- numeric()  # realized trait heritability: to check if it fits expected value
   
   distriQTLh2 <- numeric()# realized QTL h?, to plot histogrammes....
-  
   
   S <- sample(ncol(geno),NQTL)
   S <- sort.list(S)
@@ -1930,7 +1911,7 @@ qtlSIM <- function(geno,NQTL=100,h2=0.3) {
 #/////////////////////////////////////////////
 bwgs.nacount <- function(geno) {
   #Calculate the percentage of missing elements in SNP or DArT, SNP GBS:
-  #(c)06/02/2014 V.G. Tran
+  #(c)06/02/2014 Louis Gautier V.G. Tran
   
   num_element = table(geno)
   num_of_binary = length(num_element) # = 2 for DArT, = 3 for SNP, = 5 for SNP issu GBS
@@ -1980,13 +1961,14 @@ bwgs.nacount <- function(geno) {
 #COMMON FUNCTION
 bwgs.common <- function(a1,a2) {
   #COMMON FUNCTION
+  #Louis Gautier Tran
   commun = a1[which(names(a1)%in%names(a2))]
   return(commun)
   
 }
 
 bwgs.bestpred <- function(ans,n) {
-  #(c)2014 G. CHARMET & V.G. TRAN
+  #(c)2014 G. CHARMET & Louis Gautier V.G. TRAN
   message(c("The ",as.character(n)," best prediction[s]:"))
   message("")
   #Find the n best predictions:
@@ -2002,6 +1984,7 @@ bwgs.bestpred <- function(ans,n) {
 #MNI Function replaces missing value by average allele frequency
 #////////////////////////////////////////////////////////
 MNI <- function(x) 
+#(c)2013 Louis Gautier V.G. Tran, Gilles Charmet
 {
   NAreplace= function (y) 
   {
