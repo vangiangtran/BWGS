@@ -5,8 +5,7 @@ Version: 3.0.0
 Authors@R: c(person("Louis Gautier", "Tran",email = "louis.gautier.tran@eurominister.com", role = c("aut","cre")),
    person("Gilles", "Charmet", email = "gilles.charmet@inra.fr", role = "aut"), 
    person("Delphine", "Ly", role = "ctb"), 
-   person("Sophie", "Bouchet", email = "sophie.bouchet@inra.fr" role = "ctb"),
-   person("Bangyou", "Zheng", email = "bangyou.zheng@csiro.au", role = "cre"))
+   person("Sophie", "Bouchet", email = "sophie.bouchet@inra.fr", role = "ctb"))
 Description: Package for Breed Wheat Genomic Selection Pipeline. 
     The R package 'BWGS' is developed by Louis Gautier Tran <louis.gautier.tran@eurominister.com> and Gilles Charmet <gilles.charmet@inra.fr>.
     This repository is forked from original repository <https://forgemia.inra.fr/umr-gdec/bwgs>
