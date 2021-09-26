@@ -1,13 +1,19 @@
 #BWGS Toolbox 2012-2021 - BreadWheat Genomic Selection
 #@ Package authors: Dr. Louis Gautier Tran, Dr. Gilles Charmet
+#@ Contributors: Dr. Delphine LY, Dr. Sophie Bouchet
 #@ Contact: louis.gautier.tran@eurominister.com; gilles.charmet@inra.fr
-#@ optiTRAIN(): function added by Dr. Sophie Bouchet [sophie.bouchet@inra.fr] at 31/02/2017 (?)
 
 #Version 3.0.0 - Release date: 25-09-2021
+#Package policy
 #The original authors must be cited when copy, distribute, or reuse the content
+#The ownership of copyright and intellectual property rights of all components of the package must be clear and unambiguous 
+#Where code is copied (or derived) from the work of others 
+#(including from R itself), care must be taken that any copyright/license statements are preserved and authorship is not misrepresented.
+
 #/////////////////////////////////////////////////////////////////////
 
 percentNA=function(x)
+
 {
   perNA=length(x[is.na(x)])/length(x)
   perNA
