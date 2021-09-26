@@ -1,7 +1,8 @@
 #BWGS Toolbox 2012-2021 - BreadWheat Genomic Selection
-#@ 2021 Dr. Louis Gautier Tran, Dr. Gilles Charmet, Dr. Sophie Bouchet
+#@ Package authors: Dr. Louis Gautier Tran, Dr. Gilles Charmet
 #@ Contact: louis.gautier.tran@eurominister.com; gilles.charmet@inra.fr
-#@ Where are the functions/codes created by Dr. Sophie Bouchet?
+#@ optiTRAIN(): function added by Dr. Sophie Bouchet [sophie.bouchet@inra.fr] at 31/02/2017 (?)
+
 #Version 3.0.0 - Release date: 25-09-2021
 #The original authors must be cited when copy, distribute, or reuse the content
 #/////////////////////////////////////////////////////////////////////
