@@ -74,7 +74,7 @@
 #'      reduct.size = "NULL",
 #'      r2 = "NULL",
 #'      pval = "NULL",
-#'      MAP = "NULL",
+#'      MAP = NULL,
 #'      geno.impute.method = "MNI",
 #'      predict.method = "GBLUP")
 #' }
@@ -87,7 +87,9 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   #message("2015 Gilles Charmet & Louis Gautier Tran)
   
   # upload the necessary libraries
-
+  if (length(MAP) == 1 && MAP == "NULL") {
+    MAP <- NULL
+  }
   #message("")
   start.time <- Sys.time()
   message("Start time:")
@@ -106,7 +108,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   # FILTER according to MAF and MAXNA
   #//////////////////////////////////////////////////////////////
   
-  if(MAP!="NULL")
+  if(!is.null(MAP))
   {
     if (length(rownames(MAP)) == 0) {
       stop("Row names are required for MAP")
@@ -195,7 +197,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   message("Number of markers after filtering")
   print(new.geno.size)
   
-  if(MAP!="NULL")
+  if(!is.null(MAP))
   {
     MAP=MAP[colnames(geno),]
   }
@@ -337,7 +339,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
         
       }  else {stop("Please choose the p value for new genotypic data.")}
       
-      if(MAP=="NULL")
+      if(is.null(MAP))
       {
         stop("Please choose the r2 and/or MAP for LD reduction.")
       } # END OF LD reduction
@@ -361,7 +363,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     
     if(geno.reduct.method=="LD")
     {
-      if(MAP=="NULL")
+      if(is.null(MAP))
       {
         stop("Please choose MAP for LD reduction.")
       } # END OF LD reduction
