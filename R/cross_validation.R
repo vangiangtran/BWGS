@@ -102,7 +102,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
                     reduct.marker.size="NULL",
                     pval="NULL",
                     r2="NULL",
-                    MAP="NULL",
+                    MAP=NULL,
                     geno.impute.method="NULL",
                     predict.method="NULL",
                     nFolds, 
@@ -136,7 +136,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   # FILTER according to MAF and MAXNA
   #//////////////////////////////////////////////////////////////
   
-  if(MAP!="NULL")  {
+  if(!is.null(MAP))  {
     if (length(rownames(MAP)) == 0) {
       stop("Row names are required for MAP")
     }
@@ -364,14 +364,14 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
         
       }  else {stop("Please choose the p value for new genotypic data.")}
       
-      if(MAP=="NULL")
+      if(is.null(MAP))
       {
         stop("Please choose the r2 and/or MAP for LD reduction.")
       } # END OF LD reduction
       
       
       
-      if(MAP!="NULL")
+      if(!is.null(MAP))
       {
         if (!is.null(r2))
         {
@@ -400,7 +400,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
     if(geno.reduct.method=="LD")
       
     {
-      if(MAP=="NULL")
+      if(is.null(MAP))
       {
         
         {stop("Please choose a MAP for LD reduction.")}
