@@ -131,7 +131,8 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   
   #if geno.impute.method ="ALL" and predict.method="ALL": bwgs.cv() will compare all methods
 
-
+  print("XXXXXXXXXXX FRESH XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+  exit(0)
   #safe test for valid FIXED type
   if(is.matrix(FIXED)){
 	  message("Argument FIXED is a matrix")
