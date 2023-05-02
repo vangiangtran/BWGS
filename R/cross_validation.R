@@ -130,6 +130,16 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   #r2 and n.parts are for GMSLD or GMSLDV reduct method
   
   #if geno.impute.method ="ALL" and predict.method="ALL": bwgs.cv() will compare all methods
+
+
+  #safe test for valid FIXED type
+  if(is.matrix(FIXED)){
+	  message("Argument FIXED is a matrix")
+  }else if(FIXED != "NULL"){
+	  stop("FIXED must be a matrix or string \"Null\"")
+
+  }
+
   
   #///////////////////////////////////////////////////////////////
   #STEP 0: select common lines in geno and pheno matrices
@@ -152,9 +162,8 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
     geno=geno[,MAPPED_markers]
   }
   
-  if(FIXED!="NULL") {
+  if(is.matrix(FIXED)) {
     genoFIX=intersect(rownames(FIXED),rownames(geno))
-    
     FIXED=FIXED[genoFIX,]
     geno=geno[genoFIX,]
   }
@@ -171,7 +180,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   {
     geno=geno[LIST,]
     pheno=pheno[LIST]
-    if(FIXED!="NULL"){FIXED=FIXED[LIST,]}
+    if(is.matrix(FIXED)){FIXED=FIXED[LIST,]}
     
     new.pheno.size=length(LIST)
     message("Number of common lines between geno and pheno")
@@ -272,7 +281,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
     }
     
     message("Imputed by MNI, EMI...finished.")
-    if (FIXED!="NULL") {FIXED=round(MNI(FIXED))}
+    if (is.matrix(FIXED)) {FIXED=round(MNI(FIXED))}
     if(geno.impute.method=="NULL")
     { 
       
