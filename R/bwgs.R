@@ -434,7 +434,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
         phenoReal <- pheno[folds == fold] 
         genoTrain <- geno[folds != fold,]
         genoPred <- geno[folds == fold,]
-        if (FIXED!="NULL")
+        if (is.matrix(FIXED))
         {
           FixedPred <- FIXED[folds == fold,]
           FixedTrain <- FIXED[folds!=fold,]
@@ -523,7 +523,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
         phenoTrain=pheno[rownames(genoTrain)]
         phenoReal <- pheno[!names(pheno)%in%names(phenoTrain)] 
         genoPred <- geno[names(phenoReal),]
-        if (FIXED!="NULL")
+        if (is.matrix(FIXED))
         {
           FixedPred <- FIXED[folds == fold,]
           FixedTrain <- FIXED[folds!=fold,]
@@ -619,7 +619,7 @@ runCV<- function(pheno, geno, FIXED, pop.reduct.method,rps, predictor, nFolds, n
         phenoReal <- pheno[!names(pheno)%in%names(phenoTrain)] 
         genoPred <- geno[names(phenoReal),]
         
-        if (FIXED!="NULL")
+        if (is.matrix(FIXED))
         {
           FixedPred <- FIXED[rownames(genoTrain),]
           FixedTrain <- FIXED[!rownames(FIXED)%in%names(phenoTrain),]
