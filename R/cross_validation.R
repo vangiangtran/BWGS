@@ -130,9 +130,11 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   #r2 and n.parts are for GMSLD or GMSLDV reduct method
   
   #if geno.impute.method ="ALL" and predict.method="ALL": bwgs.cv() will compare all methods
-
-  print("XXXXXXXXXXX FRESH FRESH XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
-  exit(0)
+	
+  # ...	
+  readline(prompt="VERSION: 23/4/5 3:29 guinea hay")
+	
+	
   #safe test for valid FIXED type
   if(is.matrix(FIXED)){
 	  message("Argument FIXED is a matrix")
