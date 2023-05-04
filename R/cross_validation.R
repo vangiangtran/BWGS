@@ -140,7 +140,6 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
 	  message("Argument FIXED is a matrix")
   }else if(FIXED != "NULL"){
 	  stop("FIXED must be a matrix or string \"Null\"")
-
   }
 
   
