@@ -121,7 +121,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     geno_train=geno_train[,MAPPED_markers]
   }
   
-  if(FIXED_train!="NULL")
+  if(is.matrix(FIXED_train))
   {
     genoTRFIX=intersect(rownames(FIXED_train),rownames(geno_train))
     
@@ -129,7 +129,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     geno_train=geno_train[genoTRFIX,]
   }
   
-  if(FIXED_target!="NULL")
+  if(is.matrix(FIXED_target))
   {
     genoTAFIX=intersect(rownames(FIXED_target),rownames(geno_target))
     
@@ -153,7 +153,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     message("Number of common lines between geno and pheno")
     print(new.pheno.size)
     
-    if(FIXED_train!="NULL")
+    if(is.matrix(FIXED_train))
     {
       genoTRFIX=intersect(rownames(FIXED_train),rownames(geno_train))
       FIXED_train=FIXED_train[genoTRFIX,]
@@ -175,7 +175,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
   geno_target_nrows=nrow(geno_target)
   geno_nrows <- nrow(geno)
   
-  if(FIXED_train!="NULL")
+  if(is.matrix(FIXED_train))
   {
     FIXED <- rbind(FIXED_train,FIXED_target)
     FIXED <-MNI(FIXED)
@@ -247,7 +247,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     geno_train_impute=geno[1:geno_train_nrows,]
     geno_valid_impute=geno[(geno_train_nrows+1):geno_nrows,]
     
-    if(FIXED_train!="NULL")
+    if(is.matrix(FIXED_train))
     {
       FIXED_train=FIXED[1:geno_train_nrows,]
       FIXED_target=FIXED[(geno_train_nrows+1):geno_nrows,]
@@ -387,7 +387,7 @@ bwgs.predict <- function(geno_train,pheno_train,geno_target,FIXED_train="NULL",F
     geno_train_impute=geno[1:geno_train_nrows,]
     geno_valid_impute=geno[(geno_train_nrows+1):geno_nrows,]
     
-    if(FIXED_train!="NULL")
+    if(is.matrix(FIXED_train))
     {
       FIXED_train=FIXED[1:geno_train_nrows,]
       FIXED_target=FIXED[(geno_train_nrows+1):geno_nrows,]
