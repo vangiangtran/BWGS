@@ -982,7 +982,7 @@ predict_BA <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   R2=0.5;
   ETA<-list(list(X=GENO,model='BayesA'))
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
@@ -1052,7 +1052,7 @@ predict_BB <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL
   R2=0.5
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
@@ -1133,7 +1133,7 @@ predict_BC <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL
   R2=0.5
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
@@ -1205,7 +1205,7 @@ predict_BL <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL;
   R2=0.5;
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
@@ -1277,7 +1277,7 @@ predict_BRR <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   weights=NULL;
   R2=0.5;
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
@@ -1417,7 +1417,7 @@ predict_GBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred
   yNa[rownames(genoPred)] <- NA
   A <- A.mat(GENO) 
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(MNI(FIX))
@@ -1617,7 +1617,7 @@ predict_RKHS <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPred)
   h <- 0.5
   K=exp(-h*D)
   saveAt=stringi::stri_rand_strings(1, 32, '[a-zA-Z]');
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
@@ -1710,7 +1710,7 @@ predict_EGBLUP <- function(phenoTrain, genoTrain, FixedTrain, genoPred, FixedPre
   weights=NULL;
   R2=0.5;
   
-  if(FixedTrain!="NULL")
+  if(is.matrix(FixedTrain))
   {
     FIX <- rbind(FixedTrain,FixedPred)
     FIX=round(FIX)
