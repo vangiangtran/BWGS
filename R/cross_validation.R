@@ -132,7 +132,7 @@ bwgs.cv <- function(geno,pheno, FIXED = "NULL",
   #if geno.impute.method ="ALL" and predict.method="ALL": bwgs.cv() will compare all methods
 	
   # ...	
-  readline(prompt="VERSION: 23/4/5 3:29 sunny seat")
+  message("VERSION: 23/4/5 Cold Milk")
 	
 	
   #safe test for valid FIXED type
