@@ -1,7 +1,7 @@
-#BWGS Toolbox 2012-2021 - BreadWheat Genomic Selection
+#BWGS Toolbox 2012-2024 - BreadWheat Genomic Selection
 #@ Package authors: Dr. Louis Gautier Tran, Dr. Gilles Charmet
 #@ Contributors: Dr. Delphine LY, Dr. Sophie Bouchet
-#@ Contact: louis.gautier.tran@eurominister.com; gilles.charmet@inra.fr
+#@ Contact: louis.gautier.tran@gmail.com; gilles.charmet@inra.fr
 
 #Version 3.0.0 - Release date: 25-09-2021
 #Package policy
