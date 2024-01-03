@@ -6,7 +6,7 @@
 [![](http://cranlogs.r-pkg.org/badges/last-month/BWGS?color=green)](https://cran.r-project.org/package=BWGS)
 [![](http://cranlogs.r-pkg.org/badges/last-week/BWGS?color=green)](https://cran.r-project.org/package=BWGS)
 
-The R package BWGS is developed by Dr. Van Giang Tran (L.G.) and Dr. Gilles Charmet. This repository is forked from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and modified as a R package. The BWGS is part of The European BreedWheat project (2011-2019) funded with 34M€. The publishing to Cran is maintained by Dr. Van Giang Tran.
+The R package BWGS is developed by Dr. Van Giang Tran (L.G.) and Dr. Gilles Charmet. This repository is forked from [original repository](https://forgemia.inra.fr/umr-gdec/bwgs) and modified as a R package. The BWGS is part of The European BreedWheat project (2011-2019) funded with 34M€. The publishing to Cran is maintained by Dr. Van Giang Tran & Dr. Gilles Charmet.
 
 
 ## Installation
