@@ -1,5 +1,5 @@
 #Title  bwgs.cv
-#(c)2012-2021 Louis Gautier Tran & Gilles Charmet
+#(c)2012-2024 Louis Gautier Tran & Gilles Charmet
 #GPL-V2 licence 
 #' @title Genomic Prediction with cross validation
 #' @description The bwgs.cv function carries out cross-validation using genotypic and
