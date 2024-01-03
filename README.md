@@ -17,10 +17,10 @@ Install from CRAN
 install.packages("BWGS")
 ```
 
-Install dev version from github [Github](https://github.com/eurominister/BWGS) 
+Install dev version from github [Github](https://github.com/vangiangtran/BWGS) 
 
 ```r
-devtools::install_github('eurominister/BWGS')
+devtools::install_github('vangiangtran/BWGS')
 ```
 
 ## Documentation
