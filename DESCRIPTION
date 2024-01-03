@@ -2,12 +2,12 @@ Package: BWGS
 Type: Package
 Title: BreedWheat Genomic Selection Pipeline
 Version: 3.0.0
-Authors@R: c(person("Louis Gautier", "Tran", email = "louis.gautier.tran@eurominister.com", role = c("aut", "cre")),
+Authors@R: c(person("Van Giang", "Tran", email = "vangiang.tran@gmail.com", role = c("aut", "cre")),
    person("Gilles", "Charmet", email = "gilles.charmet@inra.fr", role = "aut"), 
    person("Delphine", "Ly", email = "ly-delphine@live.fr", role = "ctb"), 
    person("Sophie", "Bouchet", email = "sophie.bouchet@inra.fr", role = "ctb"))
 Description: Package for Breed Wheat Genomic Selection Pipeline. 
-    The R package 'BWGS' is developed by Louis Gautier Tran <louis.gautier.tran@eurominister.com> and Gilles Charmet <gilles.charmet@inra.fr>.
+    The R package 'BWGS' is developed by Van Giang Tran (L.G.) and Gilles Charmet.
     This repository is forked from original repository <https://forgemia.inra.fr/umr-gdec/bwgs>
     and modified as a R package.
 License: GPL(>=2)
@@ -15,6 +15,6 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.5.0)
 Imports: rrBLUP, BGLR, glmnet, randomForest, brnn, e1071, stringi
-URL: https://github.com/eurominister/BWGS
-BugReports: https://github.com/eurominister/BWGS/issues
+URL: https://github.com/vangiangtran/BWGS
+BugReports: https://github.com/vangiang/BWGS/issues
 RoxygenNote: 7.1.1
